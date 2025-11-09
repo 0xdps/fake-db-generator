@@ -97,7 +97,7 @@ def populate_data():
 
 
 def main():
-    parser = ArgumentParser(prog="fdg", description="Fake Database Generator!!!")
+    parser = ArgumentParser(prog="schemer", description="Schemer - JSON Schema to Database Generator")
     
     parser.add_argument("-c", "--create-table", action="store_true", dest="create", help="creates the database tables")
     parser.add_argument("-p", "--populate-data", action="store_true", dest="populate", help="start populating data in tables")
