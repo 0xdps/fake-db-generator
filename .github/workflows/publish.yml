@@ -1,0 +1,69 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    environment: 
+      name: pypi
+      url: https://pypi.org/p/schemer
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade "setuptools>=61.0" wheel
+        pip install build twine
+
+    - name: Verify version matches tag
+      run: |
+        PACKAGE_VERSION=$(python -c "import schemer; print(schemer.__version__)")
+        TAG_VERSION=${GITHUB_REF#refs/tags/v}
+        echo "Package version: $PACKAGE_VERSION"
+        echo "Tag version: $TAG_VERSION"
+        if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+          echo "❌ Version mismatch: Package is $PACKAGE_VERSION but tag is $TAG_VERSION"
+          exit 1
+        fi
+        echo "✅ Version matches tag"
+
+    - name: Install and run tests
+      run: |
+        pip install -e ".[dev]"
+        pytest tests/ --cov=schemer --cov-report=term
+        flake8 schemer --count --select=E9,F63,F7,F82 --show-source --statistics
+        black --check schemer/
+        isort --check-only schemer/
+
+    - name: Build package
+      run: |
+        rm -rf build/ dist/ *.egg-info/
+        python -m build
+
+    - name: Validate package
+      run: |
+        python -m twine check dist/*
+        pip install dist/*.whl
+        python -c "import schemer; print(f'✅ Successfully installed v{schemer.__version__}')"
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        print-hash: true
+        verbose: true

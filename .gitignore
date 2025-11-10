@@ -265,3 +265,20 @@ $RECYCLE.BIN/
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,linux,python
+
+# Ignore all markdown files except README.md, CONTRIBUTING.md and PRIVACY.md
+*.md
+!README.md
+!CONTRIBUTING.md
+!PRIVACY.md
+!CHANGELOG.md
+!DEVELOPMENT.md
+
+# Keep LICENSE file tracked (common file names)
+!LICENSE
+!LICENSE.txt
+!LICENSE.md
+
+# tutorials files
+!tutorials/*.md
+!tutorials/**/*.md
