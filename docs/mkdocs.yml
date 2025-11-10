@@ -6,6 +6,8 @@ repo_url: https://github.com/0xdps/fake-stack
 repo_name: 0xdps/fake-stack
 edit_uri: edit/trunk/docs/
 
+docs_dir: .
+
 theme:
   name: material
   palette:
