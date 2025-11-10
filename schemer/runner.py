@@ -3,13 +3,7 @@ import pathlib
 import shutil
 from argparse import ArgumentParser
 
-from sqlalchemy import (
-    Column,
-    Index,
-    MetaData,
-    Table,
-    create_engine,
-)
+from sqlalchemy import Column, Index, MetaData, Table, create_engine
 from sqlalchemy.engine import URL, Engine
 
 from .models import (
