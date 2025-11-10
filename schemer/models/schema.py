@@ -1,7 +1,7 @@
 import json
 import os
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -24,7 +24,7 @@ class DbOptions(BaseModel):
 
 class TableIndex(BaseModel):
     name: str
-    columns: list[str]
+    columns: List[str]
 
 
 class ColumnType(BaseModel):
@@ -35,7 +35,7 @@ class ColumnType(BaseModel):
 class TableColumn(BaseModel):
     name: str
     type: Union[str, ColumnType]
-    options: dict
+    options: Dict
 
     def model_post_init(self, __context: Any) -> None:
         if isinstance(self.type, str):
@@ -44,8 +44,8 @@ class TableColumn(BaseModel):
 
 class DbTable(BaseModel):
     name: str
-    columns: list[TableColumn]
-    indexes: list[TableIndex] = Field(default_factory=list)
+    columns: List[TableColumn]
+    indexes: List[TableIndex] = Field(default_factory=list)
 
 
 class PopulateField(BaseModel):
@@ -60,14 +60,14 @@ class PopulateField(BaseModel):
 
 class DbPopulate(BaseModel):
     name: str
-    fields: list[PopulateField]
+    fields: List[PopulateField]
     count: int
 
 
 class DbSchema(BaseModel):
     database: DbOptions
-    tables: list[DbTable] = Field(default_factory=list)
-    populate: list[DbPopulate] = Field(default_factory=list)
+    tables: List[DbTable] = Field(default_factory=list)
+    populate: List[DbPopulate] = Field(default_factory=list)
 
 
 def load_schema(filename):
