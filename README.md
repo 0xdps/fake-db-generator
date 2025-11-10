@@ -21,13 +21,31 @@ Generate databases from JSON schemas with realistic fake data. **10-100x faster*
 - 📦 **Multi-Ecosystem** - Same package name for Python (pip) and Node.js (npm)
 - 🔧 **Zero Dependencies** - Batteries included via bundled binaries
 
+## 📦 Installation
+
+**Python (PyPI):**
+```bash
+pip install fakestack
+```
+
+**Node.js (npm):**
+```bash
+npm install fakestack
+```
+
+**Homebrew (macOS/Linux):**
+```bash
+brew install 0xdps/fakestack
+```
+
+**Direct Binary Download:**
+Download from [GitHub Releases](https://github.com/0xdps/fake-stack/releases)
+
 ## 🚀 Quick Start
 
 ### Python
 
 ```bash
-pip install fakestack
-
 # CLI usage
 fakestack -d .                    # Download example schema
 fakestack -c -p -f schema.json    # Create and populate
