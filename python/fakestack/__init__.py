@@ -10,7 +10,7 @@ __email__ = "dps.manit@gmail.com"
 __license__ = "MIT"
 
 # Import main API
-from .runner import main, run_fakestack, fakestack
+from .runner import fakestack, main, run_fakestack
 
 __all__ = [
     "__version__",

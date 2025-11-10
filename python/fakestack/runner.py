@@ -6,9 +6,9 @@ Zero dependencies, blazing-fast database generation.
 """
 
 import os
-import sys
 import platform
 import subprocess
+import sys
 from pathlib import Path
 
 
