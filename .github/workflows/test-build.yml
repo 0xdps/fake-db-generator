@@ -35,24 +35,24 @@ jobs:
         
     - name: Lint with flake8
       run: |
-        flake8 schemer --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 schemer --count --exit-zero --max-complexity=10 --max-line-length=135 --extend-ignore=E203,F401 --statistics
+        flake8 fakestack --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 fakestack --count --exit-zero --max-complexity=10 --max-line-length=135 --extend-ignore=E203,F401 --statistics
         
     - name: Check formatting with black
       run: |
-        black --check schemer/
+        black --check fakestack/
         
     - name: Check import sorting with isort
       run: |
-        isort --check-only schemer/
+        isort --check-only fakestack/
         
     - name: Type checking with mypy
       run: |
-        mypy schemer/ --ignore-missing-imports || true
+        mypy fakestack/ --ignore-missing-imports || true
         
     - name: Test with pytest
       run: |
-        pytest tests/ --cov=schemer --cov-report=xml --cov-report=term
+        pytest tests/ --cov=fakestack --cov-report=xml --cov-report=term
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

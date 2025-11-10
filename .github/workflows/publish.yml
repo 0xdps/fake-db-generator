@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: pypi
-      url: https://pypi.org/p/schemer
+      url: https://pypi.org/p/fakestack
     permissions:
       id-token: write
       contents: read
@@ -33,7 +33,7 @@ jobs:
 
     - name: Verify version matches tag
       run: |
-        PACKAGE_VERSION=$(python -c "import schemer; print(schemer.__version__)")
+        PACKAGE_VERSION=$(python -c "import fakestack; print(fakestack.__version__)")
         TAG_VERSION=${GITHUB_REF#refs/tags/v}
         echo "Package version: $PACKAGE_VERSION"
         echo "Tag version: $TAG_VERSION"
@@ -46,10 +46,10 @@ jobs:
     - name: Install and run tests
       run: |
         pip install -e ".[dev]"
-        pytest tests/ --cov=schemer --cov-report=term
-        flake8 schemer --count --select=E9,F63,F7,F82 --show-source --statistics
-        black --check schemer/
-        isort --check-only schemer/
+        pytest tests/ --cov=fakestack --cov-report=term
+        flake8 fakestack --count --select=E9,F63,F7,F82 --show-source --statistics
+        black --check fakestack/
+        isort --check-only fakestack/
 
     - name: Build package
       run: |
@@ -60,7 +60,7 @@ jobs:
       run: |
         python -m twine check dist/*
         pip install dist/*.whl
-        python -c "import schemer; print(f'✅ Successfully installed v{schemer.__version__}')"
+        python -c "import fakestack; print(f'✅ Successfully installed v{fakestack.__version__}')"
 
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1

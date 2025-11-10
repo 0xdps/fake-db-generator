@@ -1,6 +1,6 @@
-# Contributing to Schemer
+# Contributing to Fakestack
 
-Thank you for your interest in contributing to Schemer! This guide will help you get started.
+Thank you for your interest in contributing to Fakestack! This guide will help you get started.
 
 ## 📋 Ways to Contribute
 
@@ -47,13 +47,13 @@ git checkout -b bugfix/fix-issue-123
 pytest
 
 # Run with coverage
-pytest --cov=schemer --cov-report=html
+pytest --cov=fakestack --cov-report=html
 
 # Check code quality
 black --check .
 isort --check-only .
 flake8 .
-mypy schemer/
+mypy fakestack/
 ```
 
 ## ✏️ Making Changes
@@ -168,7 +168,7 @@ Include:
 **Description:** Brief description of the bug
 
 **Steps to Reproduce:**
-1. Run `schemer -c -f schema.json`
+1. Run `fakestack -c -f schema.json`
 2. See error
 
 **Expected Behavior:** What should happen
@@ -178,7 +178,7 @@ Include:
 **Environment:**
 - OS: macOS 14.0
 - Python: 3.11.0
-- Schemer: 2.0.0
+- Fakestack: 2.0.0
 - Database: MySQL 8.0
 
 **Schema File:**

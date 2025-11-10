@@ -99,7 +99,7 @@ def populate_data():
 
 def main():
     parser = ArgumentParser(
-        prog="schemer", description="Schemer - JSON Schema to Database Generator"
+        prog="fakestack", description="Fakestack - Full-Stack Fake Data Generator"
     )
 
     parser.add_argument(

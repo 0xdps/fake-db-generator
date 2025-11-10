@@ -2,7 +2,7 @@
 
 import pytest
 
-from schemer.models.fake import (
+from fakestack.models.fake import (
     Person,
     PersonProvider,
     RandomProvider,

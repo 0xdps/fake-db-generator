@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Schemer will be documented in this file.
+All notable changes to Fakestack will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2025-11-09
 
 ### Added
-- 🎉 **Major rebranding**: Renamed from `fake-db-generator` (fdg) to `Schemer`
+- 🎉 **Major rebranding**: Renamed from `fake-db-generator` (fdg) to `Fakestack`
 - 📦 Modern `pyproject.toml` configuration replacing `setup.py`
 - 🔄 GitHub Actions CI/CD workflows for testing and publishing
 - 🧪 Multi-platform testing (Ubuntu, Windows, macOS)
@@ -36,9 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 📊 Test coverage reporting
 
 ### Changed
-- ⚡ **Breaking**: Command changed from `fdg` to `schemer`
-- ⚡ **Breaking**: Package name changed from `fdg` to `schemer`
-- ⚡ **Breaking**: Import path changed from `fdg` to `schemer`
+- ⚡ **Breaking**: Command changed from `fdg` to `fakestack`
+- ⚡ **Breaking**: Package name changed from `fdg` to `fakestack`
+- ⚡ **Breaking**: Import path changed from `fdg` to `fakestack`
 - 📦 Updated dependencies to use modern version constraints
 - 🔧 Improved package metadata and classifiers
 - 📖 Enhanced documentation with emojis and better formatting
@@ -58,7 +58,7 @@ If you were using version 1.x.x:
 fdg -c -f schema.json
 
 # New
-schemer -c -f schema.json
+fakestack -c -f schema.json
 ```
 
 **Python Imports:**
@@ -67,7 +67,7 @@ schemer -c -f schema.json
 from fdg.models import DbSchema
 
 # New  
-from schemer.models import DbSchema
+from fakestack.models import DbSchema
 ```
 
 **Installation:**
@@ -76,7 +76,7 @@ from schemer.models import DbSchema
 pip install fake-db-generator
 
 # New
-pip install schemer
+pip install fakestack
 ```
 
 ## [1.2.1] - 2024-XX-XX

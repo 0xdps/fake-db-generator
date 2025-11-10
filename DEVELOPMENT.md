@@ -1,6 +1,6 @@
 # Development Guide
 
-Complete guide for developers working on Schemer.
+Complete guide for developers working on Fakestack.
 
 ## Prerequisites
 
@@ -36,7 +36,7 @@ fake-db-generator/
 │       ├── test-build.yml
 │       ├── test-publish.yml
 │       └── publish.yml
-├── schemer/                # Main package
+├── fakestack/                # Main package
 │   ├── __init__.py         # Version and public API
 │   ├── runner.py           # CLI entry point
 │   ├── data/               # Example schemas
@@ -83,11 +83,11 @@ Example test:
 
 ```python
 import pytest
-from schemer.models.schema import load_schema
+from fakestack.models.schema import load_schema
 
 def test_load_valid_schema():
     """Test loading a valid schema file."""
-    schema = load_schema("schemer/data/example-mysql.json")
+    schema = load_schema("fakestack/data/example-mysql.json")
     assert schema.database.dbtype.value == "mysql"
     assert len(schema.tables) > 0
 ```
@@ -99,7 +99,7 @@ def test_load_valid_schema():
 pytest
 
 # With coverage
-pytest --cov=schemer --cov-report=html
+pytest --cov=fakestack --cov-report=html
 
 # Specific test
 pytest tests/test_schema.py::test_load_valid_schema
@@ -122,7 +122,7 @@ isort .
 flake8 .
 
 # Type check
-mypy schemer/
+mypy fakestack/
 ```
 
 ### 6. Commit
@@ -166,7 +166,7 @@ pytest --pdb              # Drop into debugger on failure
 
 ```bash
 # Generate coverage report
-pytest --cov=schemer --cov-report=html
+pytest --cov=fakestack --cov-report=html
 
 # Open in browser
 open htmlcov/index.html  # macOS
@@ -178,7 +178,7 @@ start htmlcov/index.html  # Windows
 
 ```python
 import pytest
-from schemer.models.fake import faker
+from fakestack.models.fake import faker
 
 class TestFaker:
     """Tests for custom Faker providers."""
@@ -334,7 +334,7 @@ twine check dist/*
 
 # Test installation
 pip install dist/*.whl
-python -c "import schemer; print(schemer.__version__)"
+python -c "import fakestack; print(fakestack.__version__)"
 ```
 
 ### Test PyPI Upload (Optional)
@@ -344,14 +344,14 @@ python -c "import schemer; print(schemer.__version__)"
 twine upload --repository testpypi dist/*
 
 # Install from Test PyPI
-pip install --index-url https://test.pypi.org/simple/ schemer
+pip install --index-url https://test.pypi.org/simple/ fakestack
 ```
 
 ## Release Process
 
 ### Version Bumping
 
-1. Update version in `schemer/__init__.py`:
+1. Update version in `fakestack/__init__.py`:
    ```python
    __version__ = "2.1.0"
    ```
@@ -369,7 +369,7 @@ pip install --index-url https://test.pypi.org/simple/ schemer
 
 3. Commit and tag:
    ```bash
-   git add schemer/__init__.py CHANGELOG.md
+   git add fakestack/__init__.py CHANGELOG.md
    git commit -m "chore: bump version to 2.1.0"
    git tag v2.1.0
    git push origin trunk
@@ -387,7 +387,7 @@ pip install --index-url https://test.pypi.org/simple/ schemer
 ### Add New Faker Provider
 
 ```python
-# In schemer/models/fake.py
+# In fakestack/models/fake.py
 from faker.providers import BaseProvider
 
 class MyProvider(BaseProvider):
@@ -404,7 +404,7 @@ faker.add_provider(MyProvider)
 ### Add New Column Type
 
 ```python
-# In schemer/models/utils.py
+# In fakestack/models/utils.py
 from sqlalchemy import Boolean
 
 def get_column_type(column: TableColumn):
@@ -420,7 +420,7 @@ def get_column_type(column: TableColumn):
 
 ```bash
 # Create new schema file
-cat > schemer/data/my-example.json << 'EOF'
+cat > fakestack/data/my-example.json << 'EOF'
 {
   "database": {...},
   "tables": [...],

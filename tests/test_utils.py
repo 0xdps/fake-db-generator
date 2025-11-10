@@ -3,8 +3,8 @@
 import pytest
 from sqlalchemy import Date, ForeignKey, Integer, Numeric, String
 
-from schemer.models.schema import ColumnType, TableColumn
-from schemer.models.utils import get_column_type, ignore_exception, logger
+from fakestack.models.schema import ColumnType, TableColumn
+from fakestack.models.utils import get_column_type, ignore_exception, logger
 
 
 class TestGetColumnType:

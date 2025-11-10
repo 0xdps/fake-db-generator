@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from schemer.models.schema import (
+from fakestack.models.schema import (
     DbOptions,
     DbSchema,
     DbTable,

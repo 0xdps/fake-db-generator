@@ -1,18 +1,18 @@
-# Schemer - JSON Schema to Database Generator# Schemer - JSON Schema to Database Generator# Schemer - JSON Schema to Database Generator
+# Fakestack - JSON Schema to Database Generator# Fakestack - JSON Schema to Database Generator# Fakestack - JSON Schema to Database Generator
 
 
 
-[![PyPI version](https://badge.fury.io/py/schemer.svg)](https://pypi.org/project/schemer/)
+[![PyPI version](https://badge.fury.io/py/fakestack.svg)](https://pypi.org/project/fakestack/)
 
-[![Python Versions](https://img.shields.io/pypi/pyversions/schemer.svg)](https://pypi.org/project/schemer/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/fakestack.svg)](https://pypi.org/project/fakestack/)
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)[![PyPI version](https://badge.fury.io/py/schemer.svg)](https://pypi.org/project/schemer/)**Schemer** is a Python tool that allows you to generate database tables and populate them with realistic fake data based on a provided JSON schema. It provides a simple command-line interface to quickly create and populate database tables without the need for manual schema definition.
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)[![PyPI version](https://badge.fury.io/py/fakestack.svg)](https://pypi.org/project/fakestack/)**Fakestack** is a Python tool that allows you to generate database tables and populate them with realistic fake data based on a provided JSON schema. It provides a simple command-line interface to quickly create and populate database tables without the need for manual schema definition.
 
 [![CI Status](https://github.com/0xdps/fake-db-generator/workflows/Test%20%26%20Build/badge.svg)](https://github.com/0xdps/fake-db-generator/actions)
 
-[![Python Versions](https://img.shields.io/pypi/pyversions/schemer.svg)](https://pypi.org/project/schemer/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/fakestack.svg)](https://pypi.org/project/fakestack/)
 
-**Schemer** is a Python tool that generates database tables and populates them with realistic fake data based on JSON schema definitions. Perfect for testing, development, and prototyping.
+**Fakestack** is a Python tool that generates database tables and populates them with realistic fake data based on JSON schema definitions. Perfect for testing, development, and prototyping.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)## Features
 
@@ -26,7 +26,7 @@
 
 - 🗄️ **Multi-Database** - MySQL, PostgreSQL, and SQLite support
 
-- 🔗 **Relationships** - Foreign key and referential data support**Schemer** is a Python tool that allows you to generate database tables and populate them with realistic fake data based on a provided JSON schema. It provides a simple command-line interface to quickly create and populate database tables without the need for manual schema definition.- Populate tables with realistic fake data using Faker
+- 🔗 **Relationships** - Foreign key and referential data support**Fakestack** is a Python tool that allows you to generate database tables and populate them with realistic fake data based on a provided JSON schema. It provides a simple command-line interface to quickly create and populate database tables without the need for manual schema definition.- Populate tables with realistic fake data using Faker
 
 - ⚡ **Fast Setup** - Create and populate databases in seconds
 
@@ -38,7 +38,7 @@
 
 ```bash
 
-pip install schemer- Generate unique and consistent test data
+pip install fakestack- Generate unique and consistent test data
 
 ```
 
@@ -54,7 +54,7 @@ git clone https://github.com/0xdps/fake-db-generator.git- 🛡️ **Multi-Databa
 
 cd fake-db-generator
 
-pip install -e .- ⚡ **Relationship Support**: Generate data with foreign key relationshipsYou can install Schemer using pip:
+pip install -e .- ⚡ **Relationship Support**: Generate data with foreign key relationshipsYou can install Fakestack using pip:
 
 ```
 
@@ -68,7 +68,7 @@ Download example schema:
 
 ```bashpip install git+https://github.com/0xdps/fake-db-generator.git
 
-schemer -d
+fakestack -d
 
 ```## 📦 Installation```
 
@@ -78,7 +78,7 @@ Create tables and populate with data:
 
 ```bash
 
-schemer -cpf schema.json### From PyPI (Recommended)## Usage
+fakestack -cpf schema.json### From PyPI (Recommended)## Usage
 
 ```
 
@@ -86,11 +86,11 @@ schemer -cpf schema.json### From PyPI (Recommended)## Usage
 
 Or separately:
 
-```bash```bashAfter installing Schemer, you can use the `schemer` command followed by various options:
+```bash```bashAfter installing Fakestack, you can use the `fakestack` command followed by various options:
 
-schemer -c -f schema.json  # Create tables
+fakestack -c -f schema.json  # Create tables
 
-schemer -p -f schema.json  # Populate datapip install schemer
+fakestack -p -f schema.json  # Populate datapip install fakestack
 
 ```
 
@@ -134,7 +134,7 @@ schemer -p -f schema.json  # Populate datapip install schemer
 
         {
 
-          "name": "username",### Development Installationschemer -c -f schema.json
+          "name": "username",### Development Installationfakestack -c -f schema.json
 
           "type": {"name": "string", "args": {"length": 50}},
 
@@ -146,7 +146,7 @@ schemer -p -f schema.json  # Populate datapip install schemer
 
           "name": "email",
 
-          "type": {"name": "string", "args": {"length": 100}},git clone https://github.com/0xdps/fake-db-generator.gitschemer -p -f schema.json
+          "type": {"name": "string", "args": {"length": 100}},git clone https://github.com/0xdps/fake-db-generator.gitfakestack -p -f schema.json
 
           "options": {"nullable": false, "unique": true}
 
@@ -158,7 +158,7 @@ schemer -p -f schema.json  # Populate datapip install schemer
 
   ],
 
-  "populate": [```schemer -cpf schema.json
+  "populate": [```fakestack -cpf schema.json
 
     {
 
@@ -170,7 +170,7 @@ schemer -p -f schema.json  # Populate datapip install schemer
 
         {"name": "username", "generator": "user_name"},
 
-        {"name": "email", "generator": "email"}schemer -d schema.json
+        {"name": "email", "generator": "email"}fakestack -d schema.json
 
       ]
 
@@ -186,11 +186,11 @@ schemer -p -f schema.json  # Populate datapip install schemer
 
 ## Supported Databases
 
-schemer -d
+fakestack -d
 
 | Database   | Driver                 | Connection String                          |
 
-|------------|------------------------|--------------------------------------------|```Schemer supports:
+|------------|------------------------|--------------------------------------------|```Fakestack supports:
 
 | MySQL      | mysql+mysqlconnector   | `mysql+mysqlconnector://user:pass@host/db` |
 
@@ -218,7 +218,7 @@ Common Faker generators available:
 
 - **Dates**: `date`, `date_time`, `past_date`, `future_date`
 
-- **Text**: `text`, `sentence`, `paragraph`, `word`schemer -c -f schema.jsonYou can find example JSON schemas [here](schemer/data/).
+- **Text**: `text`, `sentence`, `paragraph`, `word`fakestack -c -f schema.jsonYou can find example JSON schemas [here](fakestack/data/).
 
 - **Numbers**: `random_int`, `random_digit`
 
@@ -226,17 +226,17 @@ Common Faker generators available:
 
 
 
-See [examples](schemer/data/) for more complex schemas.### 3. Populate with Data
+See [examples](fakestack/data/) for more complex schemas.### 3. Populate with Data
 
 
 
 ## Command-Line Options```bash
 
-schemer -p -f schema.json
+fakestack -p -f schema.json
 
 ``````
 
-schemer [-h] [-c] [-p] [-f FILE] [-d]
+fakestack [-h] [-c] [-p] [-f FILE] [-d]
 
 ### 4. Or Do Both at Once
 
@@ -244,7 +244,7 @@ Options:
 
   -c, --create-table        Create database tables```bash
 
-  -p, --populate-data       Populate tables with fake dataschemer -cpf schema.json
+  -p, --populate-data       Populate tables with fake datafakestack -cpf schema.json
 
   -f, --file FILE           Path to JSON schema file```
 
@@ -266,7 +266,7 @@ Options:
 
 - **[Changelog](CHANGELOG.md)** - Version history- `-d` / `--download-schema` - Download example schema to current directory
 
-- **[Examples](schemer/data/)** - Example schemas- `-h` / `--help` - Display help message
+- **[Examples](fakestack/data/)** - Example schemas- `-h` / `--help` - Display help message
 
 
 
@@ -357,7 +357,7 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 ## 🎨 Data Generators
 
-Schemer uses Faker under the hood. Available generators include:
+Fakestack uses Faker under the hood. Available generators include:
 
 - **Personal**: `first_name`, `last_name`, `email`, `user_name`, `password`
 - **Address**: `address`, `city`, `country`, `street_address`, `postcode`
@@ -379,7 +379,7 @@ Schemer uses Faker under the hood. Available generators include:
 
 - **[Getting Started](tutorials/01_getting_started.md)** - Installation and first steps
 - **[Schema Guide](tutorials/02_schema_guide.md)** - Complete schema reference
-- **[Examples](schemer/data/)** - Example JSON schemas
+- **[Examples](fakestack/data/)** - Example JSON schemas
 - **[Contributing](CONTRIBUTING.md)** - How to contribute
 - **[Development](DEVELOPMENT.md)** - Developer guide
 
@@ -417,7 +417,7 @@ Schemer uses Faker under the hood. Available generators include:
 }
 ```
 
-More examples available in the [`schemer/data/`](schemer/data/) directory.
+More examples available in the [`fakestack/data/`](fakestack/data/) directory.
 
 ## 🤝 Contributing
 
@@ -464,7 +464,7 @@ Run tests with pytest:
 pytest
 
 # With coverage
-pytest --cov=schemer --cov-report=html
+pytest --cov=fakestack --cov-report=html
 
 # Run specific test file
 pytest tests/test_schema.py

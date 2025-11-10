@@ -3,7 +3,7 @@ name: Test Package Build
 on:
   pull_request:
     paths:
-      - 'schemer/__init__.py'
+      - 'fakestack/__init__.py'
       - 'pyproject.toml'
       - '.github/workflows/publish.yml'
 
