@@ -72,22 +72,22 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21'
-        cache-dependency-path: core/go.sum
+        cache-dependency-path: golang/go.sum
     
     - name: Install dependencies
-      working-directory: core
+      working-directory: golang
       run: go mod download
     
     - name: Run tests
-      working-directory: core
+      working-directory: golang
       run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
     
     - name: Build
-      working-directory: core
+      working-directory: golang
       run: go build -v .
     
     - name: Test binary
-      working-directory: core
+      working-directory: golang
       run: |
         ./fakestack -d .
         ./fakestack -c -p -f schema.json
@@ -113,11 +113,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: binaries
-        path: fakestack/bin
+        path: python/fakestack/bin
     
     - name: Make binaries executable
       if: runner.os != 'Windows'
-      run: chmod +x fakestack/bin/*
+      run: chmod +x python/fakestack/bin/*
     
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
