@@ -9,21 +9,31 @@ on:
 jobs:
   # Build Go binaries for all platforms
   build-go:
-    name: Build Go Core (${{ matrix.os }}-${{ matrix.arch }})
-    runs-on: ubuntu-latest
+    name: Build Go Core (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         include:
-          - os: linux
-            arch: amd64
-          - os: linux
-            arch: arm64
-          - os: darwin
-            arch: amd64
-          - os: darwin
-            arch: arm64
-          - os: windows
-            arch: amd64
+          - platform: linux-amd64
+            runner: ubuntu-latest
+            goos: linux
+            goarch: amd64
+          - platform: linux-arm64
+            runner: ubuntu-latest
+            goos: linux
+            goarch: arm64
+          - platform: darwin-amd64
+            runner: macos-13
+            goos: darwin
+            goarch: amd64
+          - platform: darwin-arm64
+            runner: macos-latest
+            goos: darwin
+            goarch: arm64
+          - platform: windows-amd64
+            runner: windows-latest
+            goos: windows
+            goarch: amd64
     
     steps:
     - name: Checkout code
@@ -39,23 +49,35 @@ jobs:
       working-directory: golang
       run: go mod download
     
+    - name: Install cross-compilation tools (Linux ARM64)
+      if: matrix.platform == 'linux-arm64'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu
+    
     - name: Build binary
       working-directory: golang
+      shell: bash
       env:
-        GOOS: ${{ matrix.os }}
-        GOARCH: ${{ matrix.arch }}
-        CGO_ENABLED: 0
+        CGO_ENABLED: 1
       run: |
-        OUTPUT="../bin/fakestack-${{ matrix.os }}-${{ matrix.arch }}"
-        if [ "${{ matrix.os }}" = "windows" ]; then
+        if [ "${{ matrix.platform }}" = "linux-arm64" ]; then
+          export CC=aarch64-linux-gnu-gcc
+          export GOOS=linux
+          export GOARCH=arm64
+        fi
+        
+        OUTPUT="../bin/fakestack-${{ matrix.platform }}"
+        if [ "${{ matrix.goos }}" = "windows" ]; then
           OUTPUT="${OUTPUT}.exe"
         fi
+        
         go build -ldflags="-s -w" -o "$OUTPUT"
     
     - name: Upload binary
       uses: actions/upload-artifact@v4
       with:
-        name: binaries-${{ matrix.os }}-${{ matrix.arch }}
+        name: binary-${{ matrix.platform }}
         path: bin/fakestack-*
         retention-days: 7
 
@@ -112,7 +134,7 @@ jobs:
     - name: Download binaries
       uses: actions/download-artifact@v4
       with:
-        pattern: binaries-*
+        pattern: binary-*
         path: python/fakestack/bin
         merge-multiple: true
     
@@ -177,7 +199,7 @@ jobs:
     - name: Download binaries
       uses: actions/download-artifact@v4
       with:
-        pattern: binaries-*
+        pattern: binary-*
         path: node/bin
         merge-multiple: true
     

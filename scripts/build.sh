@@ -29,6 +29,20 @@ for platform in "${platforms[@]}"; do
     fi
     
     echo "📦 Building for $GOOS/$GOARCH..."
+    
+    # CGO is required for SQLite
+    export CGO_ENABLED=1
+    
+    # Set cross-compilation tools
+    if [ "$GOOS" = "linux" ] && [ "$GOARCH" = "arm64" ]; then
+        export CC=aarch64-linux-gnu-gcc
+    elif [ "$GOOS" = "windows" ]; then
+        export CC=x86_64-w64-mingw32-gcc
+    elif [ "$GOOS" = "darwin" ] && [ "$GOARCH" != "$(go env GOHOSTARCH)" ]; then
+        # Cross-compiling for macOS requires OSX SDK
+        echo "⚠️  Warning: Cross-compiling for macOS may require additional setup"
+    fi
+    
     GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w" -o "$output"
     
     # Make executable on Unix

@@ -7,8 +7,21 @@ on:
 jobs:
   # Build Go binaries for all platforms
   build-binaries:
-    name: Build Go Binaries
-    runs-on: ubuntu-latest
+    name: Build Go Binary (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - platform: linux-amd64
+            runner: ubuntu-latest
+          - platform: linux-arm64
+            runner: ubuntu-latest
+          - platform: darwin-amd64
+            runner: macos-13
+          - platform: darwin-arm64
+            runner: macos-latest
+          - platform: windows-amd64
+            runner: windows-latest
     
     steps:
     - name: Checkout code
@@ -18,11 +31,56 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21'
+        cache-dependency-path: golang/go.sum
     
-    - name: Build all binaries
-      run: ./scripts/build.sh
+    - name: Install cross-compilation tools (Linux ARM64)
+      if: matrix.platform == 'linux-arm64'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu
     
-    - name: Upload binaries
+    - name: Build binary
+      working-directory: golang
+      shell: bash
+      env:
+        CGO_ENABLED: 1
+      run: |
+        if [ "${{ matrix.platform }}" = "linux-arm64" ]; then
+          export CC=aarch64-linux-gnu-gcc
+          export GOOS=linux
+          export GOARCH=arm64
+        fi
+        
+        OUTPUT="../bin/fakestack-${{ matrix.platform }}"
+        if [[ "${{ matrix.platform }}" == *"windows"* ]]; then
+          OUTPUT="${OUTPUT}.exe"
+        fi
+        
+        mkdir -p ../bin
+        go build -ldflags="-s -w" -o "$OUTPUT"
+    
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: binary-${{ matrix.platform }}
+        path: bin/fakestack-*
+        retention-days: 90
+  
+  # Merge all binaries into one artifact
+  merge-binaries:
+    name: Merge All Binaries
+    runs-on: ubuntu-latest
+    needs: build-binaries
+    
+    steps:
+    - name: Download all binaries
+      uses: actions/download-artifact@v4
+      with:
+        pattern: binary-*
+        path: bin
+        merge-multiple: true
+    
+    - name: Upload merged binaries
       uses: actions/upload-artifact@v4
       with:
         name: binaries
@@ -33,7 +91,7 @@ jobs:
   publish-python:
     name: Publish to PyPI
     runs-on: ubuntu-latest
-    needs: build-binaries
+    needs: merge-binaries
     environment: 
       name: pypi
       url: https://pypi.org/p/fakestack
@@ -113,7 +171,7 @@ jobs:
   publish-npm:
     name: Publish to npm
     runs-on: ubuntu-latest
-    needs: build-binaries
+    needs: merge-binaries
     environment:
       name: npm
       url: https://www.npmjs.com/package/fakestack
