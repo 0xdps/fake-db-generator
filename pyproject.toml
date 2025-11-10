@@ -41,6 +41,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+minimal = [
+    # SQLite only - no database drivers needed
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
