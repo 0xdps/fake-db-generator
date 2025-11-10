@@ -17,7 +17,7 @@ jobs:
           - platform: linux-arm64
             runner: ubuntu-latest
           - platform: darwin-amd64
-            runner: macos-13
+            runner: macos-15
           - platform: darwin-arm64
             runner: macos-latest
           - platform: windows-amd64

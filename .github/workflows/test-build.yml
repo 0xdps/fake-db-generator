@@ -23,7 +23,7 @@ jobs:
             goos: linux
             goarch: arm64
           - platform: darwin-amd64
-            runner: macos-13
+            runner: macos-15
             goos: darwin
             goarch: amd64
           - platform: darwin-arm64
