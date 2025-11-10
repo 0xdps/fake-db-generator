@@ -221,6 +221,7 @@ jobs:
     
     - name: Test package
       working-directory: node
+      shell: bash
       run: |
         node dist/cli.js -d .
         node dist/cli.js -c -p -f schema.json
