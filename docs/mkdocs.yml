@@ -10,27 +10,49 @@ docs_dir: .
 
 theme:
   name: material
+  language: en
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: deep purple
+      accent: purple
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: deep purple
+      accent: purple
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
   features:
-    - navigation.tabs
-    - navigation.sections
-    - navigation.top
-    - search.suggest
-    - search.highlight
-    - content.code.copy
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
     - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - content.tooltips
+    - header.autohide
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    - toc.integrate
 
 nav:
   - Home: index.md
@@ -72,9 +94,16 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/0xdps/fake-stack
+      name: GitHub Repository
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/fakestack/
+      name: PyPI Package
     - icon: fontawesome/brands/npm
       link: https://www.npmjs.com/package/fakestack
+      name: npm Package
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
 
 copyright: Copyright &copy; 2025 0xdps

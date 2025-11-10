@@ -1,45 +1,114 @@
-# Fakestack Documentation
+---
+hide:
+  - navigation
+  - toc
+---
 
-![PyPI](https://img.shields.io/pypi/v/fakestack)
-![npm](https://img.shields.io/npm/v/fakestack)
-![Python Versions](https://img.shields.io/pypi/pyversions/fakestack)
-![License](https://img.shields.io/github/license/0xdps/fake-stack)
+<div class="hero" markdown>
 
-**Fakestack** is a powerful tool for generating realistic fake data and populating databases with ease. Built with a high-performance Go core and accessible through Python, Node.js, and CLI interfaces.
+# Fakestack
 
-## Features
+### Generate realistic fake data and populate databases with ease
 
-✨ **Multi-Language Support** - Use from Python, Node.js, or command line  
-🚀 **High Performance** - Go-powered core for blazing fast data generation  
-🎲 **50+ Data Generators** - Names, emails, addresses, dates, and more  
-💾 **Multi-Database** - SQLite, MySQL, and PostgreSQL support  
-📊 **Realistic Data** - Generate contextually appropriate fake data  
-🔗 **Foreign Keys** - Automatic relationship handling  
-⚡ **Batch Operations** - Efficient bulk data insertion  
-🎯 **Zero Dependencies** - Self-contained with bundled binaries  
+<div class="badges" markdown>
+[![PyPI](https://img.shields.io/pypi/v/fakestack?style=flat-square)](https://pypi.org/project/fakestack/)
+[![npm](https://img.shields.io/npm/v/fakestack?style=flat-square)](https://www.npmjs.com/package/fakestack)
+[![Python](https://img.shields.io/pypi/pyversions/fakestack?style=flat-square)](https://pypi.org/project/fakestack/)
+[![License](https://img.shields.io/github/license/0xdps/fake-stack?style=flat-square)](https://github.com/0xdps/fake-stack/blob/trunk/LICENSE)
+</div>
 
-## Quick Start
+<div class="grid cards" markdown>
 
-### Installation
+-   :material-language-python:{ .lg .middle } __Python__
 
-=== "Python"
+    ---
+
     ```bash
     pip install fakestack
     ```
 
-=== "Node.js"
+    [:octicons-arrow-right-24: Get started](getting-started.md)
+
+-   :material-language-javascript:{ .lg .middle } __Node.js__
+
+    ---
+
     ```bash
     npm install fakestack
     ```
 
-=== "Homebrew"
+    [:octicons-arrow-right-24: Get started](getting-started.md)
+
+-   :material-package-variant:{ .lg .middle } __Homebrew__
+
+    ---
+
     ```bash
     brew install 0xdps/fakestack/fakestack
     ```
 
-### Basic Usage
+    [:octicons-arrow-right-24: Get started](getting-started.md)
+
+-   :material-console:{ .lg .middle } __CLI__
+
+    ---
+
+    ```bash
+    fakestack schema.json
+    ```
+
+    [:octicons-arrow-right-24: View examples](examples.md)
+
+</div>
+
+</div>
+
+## Why Fakestack?
+
+<div class="grid cards" markdown>
+
+-   :material-rocket-launch:{ .lg .middle } __High Performance__
+
+    ---
+
+    Go-powered core for blazing fast data generation. Generate millions of records in seconds.
+
+-   :material-database:{ .lg .middle } __Multi-Database__
+
+    ---
+
+    Full support for SQLite, MySQL, and PostgreSQL with automatic schema creation.
+
+-   :material-puzzle:{ .lg .middle } __50+ Generators__
+
+    ---
+
+    Comprehensive data generators for names, emails, addresses, dates, and much more.
+
+-   :material-link-variant:{ .lg .middle } __Smart Relations__
+
+    ---
+
+    Automatic foreign key handling with realistic data relationships.
+
+-   :material-language-python:{ .lg .middle } __Multi-Language__
+
+    ---
+
+    Use from Python, Node.js, CLI, or directly as a Go library.
+
+-   :material-package-down:{ .lg .middle } __Zero Dependencies__
+
+    ---
+
+    Self-contained with pre-built binaries. No external dependencies required.
+
+</div>
+
+## Quick Example
 
 === "Python"
+
     ```python
     from fakestack import Fakestack
 
@@ -47,17 +116,41 @@
         "database": {
             "dbtype": "sqlite",
             "drivername": "sqlite",
-            "database": "test.db"
+            "database": "users.db"
         },
-        "tables": [...],
-        "populate": [...]
+        "tables": [
+            {
+                "name": "users",
+                "columns": [
+                    {"name": "id", "type": "integer", 
+                     "options": {"primary_key": true, "autoincrement": true}},
+                    {"name": "name", "type": {"name": "string", "args": {"length": 100}}, 
+                     "options": {"nullable": false}},
+                    {"name": "email", "type": {"name": "string", "args": {"length": 100}}, 
+                     "options": {"nullable": false, "unique": true}}
+                ],
+                "indexes": []
+            }
+        ],
+        "populate": [
+            {
+                "name": "users",
+                "count": 1000,
+                "fields": [
+                    {"name": "name", "generator": "name"},
+                    {"name": "email", "generator": "email"}
+                ]
+            }
+        ]
     }
 
     faker = Fakestack(schema)
     faker.run()
+    # ✓ Database created with 1000 users!
     ```
 
 === "Node.js"
+
     ```javascript
     const Fakestack = require('fakestack');
 
@@ -65,55 +158,108 @@
         database: {
             dbtype: 'sqlite',
             drivername: 'sqlite',
-            database: 'test.db'
+            database: 'users.db'
         },
-        tables: [...],
-        populate: [...]
+        tables: [
+            {
+                name: 'users',
+                columns: [
+                    {name: 'id', type: 'integer', 
+                     options: {primary_key: true, autoincrement: true}},
+                    {name: 'name', type: {name: 'string', args: {length: 100}}, 
+                     options: {nullable: false}},
+                    {name: 'email', type: {name: 'string', args: {length: 100}}, 
+                     options: {nullable: false, unique: true}}
+                ],
+                indexes: []
+            }
+        ],
+        populate: [
+            {
+                name: 'users',
+                count: 1000,
+                fields: [
+                    {name: 'name', generator: 'name'},
+                    {name: 'email', generator: 'email'}
+                ]
+            }
+        ]
     };
 
     const faker = new Fakestack(schema);
     await faker.run();
+    // ✓ Database created with 1000 users!
     ```
 
 === "CLI"
+
     ```bash
+    # Create schema.json with your configuration
     fakestack schema.json
+    # ✓ Database created with 1000 users!
     ```
 
-## Documentation
+## Explore Documentation
 
-- **[Getting Started](getting-started.md)** - Installation and first steps
-- **[Schema Reference](schema-reference.md)** - Complete schema format
-- **[Data Generators](generators.md)** - All available generators
-- **[Database Support](databases.md)** - SQLite, MySQL, PostgreSQL guides
-- **[API Reference](api-reference.md)** - Python and Node.js APIs
-- **[Examples](examples.md)** - Real-world use cases
-- **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
+<div class="grid cards" markdown>
 
-## Supported Databases
+-   :material-book-open-page-variant:{ .lg .middle } __Getting Started__
 
-| Database | Support | Notes |
-|----------|---------|-------|
-| SQLite | ✅ Full | File-based, no server required |
-| MySQL | ✅ Full | Version 5.7+ |
-| PostgreSQL | ✅ Full | Version 10+ |
+    ---
 
-## Platform Support
+    Learn the basics and create your first database in minutes.
 
-| Platform | Architecture | Status |
-|----------|-------------|--------|
-| macOS | Intel (x64) | ✅ Supported |
-| macOS | Apple Silicon (ARM64) | ✅ Supported |
-| Linux | x64 | ✅ Supported |
-| Windows | x64 | ✅ Supported |
-| Windows | x86 | ✅ Supported |
+    [:octicons-arrow-right-24: Start tutorial](getting-started.md)
 
-## Community
+-   :material-file-document:{ .lg .middle } __Schema Reference__
 
-- **GitHub**: [0xdps/fake-stack](https://github.com/0xdps/fake-stack)
-- **Issues**: [Report a bug](https://github.com/0xdps/fake-stack/issues)
-- **Discussions**: [Ask questions](https://github.com/0xdps/fake-stack/discussions)
+    ---
 
-## License
+    Complete guide to JSON schema format and configuration.
 
-Fakestack is released under the [MIT License](https://github.com/0xdps/fake-stack/blob/trunk/LICENSE).
+    [:octicons-arrow-right-24: View reference](schema-reference.md)
+
+-   :material-creation:{ .lg .middle } __Data Generators__
+
+    ---
+
+    Browse all 50+ available data generators with examples.
+
+    [:octicons-arrow-right-24: See generators](generators.md)
+
+-   :material-database-cog:{ .lg .middle } __Database Support__
+
+    ---
+
+    Setup guides for SQLite, MySQL, and PostgreSQL.
+
+    [:octicons-arrow-right-24: Database guides](databases.md)
+
+-   :material-code-braces:{ .lg .middle } __API Reference__
+
+    ---
+
+    Complete Python and Node.js API documentation.
+
+    [:octicons-arrow-right-24: API docs](api-reference.md)
+
+-   :material-file-code:{ .lg .middle } __Examples__
+
+    ---
+
+    Real-world schemas for e-commerce, blogs, and more.
+
+    [:octicons-arrow-right-24: View examples](examples.md)
+
+</div>
+
+---
+
+<div class="center-text" markdown>
+
+### Ready to generate some data?
+
+[Get Started](getting-started.md){ .md-button .md-button--primary .md-button--lg }
+[View on GitHub](https://github.com/0xdps/fake-stack){ .md-button .md-button--lg }
+
+</div>

@@ -1,0 +1,227 @@
+/* Custom styles for Fakestack documentation */
+
+:root {
+  --md-primary-fg-color: #673ab7;
+  --md-primary-fg-color--light: #9575cd;
+  --md-primary-fg-color--dark: #512da8;
+  --md-accent-fg-color: #ab47bc;
+}
+
+/* Hero section styling */
+.hero {
+  text-align: center;
+  padding: 3rem 0;
+  background: linear-gradient(135deg, rgba(103, 58, 183, 0.05) 0%, rgba(171, 71, 188, 0.05) 100%);
+  border-radius: 12px;
+  margin-bottom: 3rem;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #673ab7 0%, #ab47bc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero h3 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--md-default-fg-color--light);
+  margin-bottom: 2rem;
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+/* Grid cards styling */
+.grid.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.grid.cards > * {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  background: var(--md-code-bg-color);
+}
+
+.grid.cards > *:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(103, 58, 183, 0.15);
+  border-color: var(--md-accent-fg-color);
+}
+
+.grid.cards .lg.middle {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+  color: var(--md-accent-fg-color);
+}
+
+.grid.cards h3,
+.grid.cards h4 {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+.grid.cards hr {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* Center text utility */
+.center-text {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.center-text h3 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+/* Large buttons */
+.md-button--lg {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  margin: 0.5rem;
+}
+
+/* Improve code block styling */
+.highlight pre {
+  border-radius: 8px;
+  padding: 1.5em;
+}
+
+/* Better table styling */
+table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Improve admonition spacing */
+.admonition {
+  margin: 1.5em 0;
+  border-radius: 8px;
+}
+
+/* Better button styling */
+.md-button {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.md-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Improve navigation */
+.md-tabs {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+/* Better responsive spacing */
+@media screen and (max-width: 76.1875em) {
+  .md-main__inner {
+    padding-top: 1rem;
+  }
+}
+
+/* Improve heading anchors */
+.headerlink {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+h1:hover .headerlink,
+h2:hover .headerlink,
+h3:hover .headerlink,
+h4:hover .headerlink,
+h5:hover .headerlink,
+h6:hover .headerlink {
+  opacity: 1;
+}
+
+/* Better code inline styling */
+code {
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.85em;
+}
+
+/* Improve footer */
+.md-footer {
+  margin-top: 3rem;
+}
+
+/* Better search results */
+.md-search-result__meta {
+  padding: 0.5rem 1rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+}
+
+[data-md-color-scheme="slate"] .md-search-result__meta {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Improve badge styling */
+img[alt*="badge"],
+img[alt*="shield"] {
+  margin: 0 0.2em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Better spacing for lists */
+.md-typeset ul,
+.md-typeset ol {
+  margin: 1em 0;
+}
+
+.md-typeset li {
+  margin: 0.5em 0;
+}
+
+/* Improve tabs styling */
+.tabbed-set {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Better announcement bar */
+.md-banner {
+  border-radius: 0;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus states */
+a:focus,
+button:focus,
+input:focus {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
