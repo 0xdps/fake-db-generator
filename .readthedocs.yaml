@@ -8,6 +8,10 @@ build:
   tools:
     python: "3.11"
 
+python:
+  install:
+    - requirements: docs/requirements.txt
+
 mkdocs:
-  configuration: mkdocs.yml
+  configuration: docs/mkdocs.yml
   fail_on_warning: false
