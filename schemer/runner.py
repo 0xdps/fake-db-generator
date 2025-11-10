@@ -21,9 +21,9 @@ from .models import (
     logger,
 )
 
-sc: DbSchema
-engine: Engine
-metadata: MetaData
+sc: DbSchema = None  # type: ignore
+engine: Engine = None  # type: ignore
+metadata: MetaData = None  # type: ignore
 
 
 def base_setup(filepath):
