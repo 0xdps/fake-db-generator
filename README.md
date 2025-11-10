@@ -1,52 +1,66 @@
-# Fakestack - JSON Schema to Database Generator# Fakestack - JSON Schema to Database Generator# Fakestack - JSON Schema to Database Generator
+# Fakestack - High-Performance Database Generator
 
+[![PyPI](https://img.shields.io/pypi/v/fakestack)](https://pypi.org/project/fakestack/)
+[![npm](https://img.shields.io/npm/v/fakestack)](https://www.npmjs.com/package/fakestack)
+[![Python](https://img.shields.io/pypi/pyversions/fakestack)](https://pypi.org/project/fakestack/)
+[![Node](https://img.shields.io/node/v/fakestack)](https://www.npmjs.com/package/fakestack)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+Generate databases from JSON schemas with realistic fake data. **10-100x faster** than pure Python/JavaScript implementations.
 
-[![PyPI version](https://badge.fury.io/py/fakestack.svg)](https://pypi.org/project/fakestack/)
+> 🚀 **v2.1.0**: Go core implementation with Python and Node.js wrappers - one package name across both ecosystems!
 
-[![Python Versions](https://img.shields.io/pypi/pyversions/fakestack.svg)](https://pypi.org/project/fakestack/)
+## ✨ Features
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)[![PyPI version](https://badge.fury.io/py/fakestack.svg)](https://pypi.org/project/fakestack/)**Fakestack** is a Python tool that allows you to generate database tables and populate them with realistic fake data based on a provided JSON schema. It provides a simple command-line interface to quickly create and populate database tables without the need for manual schema definition.
+- 🚀 **Schema-Driven** - Define tables and data in JSON
+- ⚡ **High Performance** - Go core for blazing speed
+- 💡 **Realistic Data** - 50+ generators (names, emails, addresses, etc.)
+- 🗄️ **Multi-Database** - SQLite, MySQL, PostgreSQL
+- 🎯 **Simple API** - CLI and programmatic usage
+- 🌍 **Cross-Platform** - Linux, macOS, Windows (amd64 & arm64)
+- 📦 **Multi-Ecosystem** - Same package name for Python (pip) and Node.js (npm)
+- 🔧 **Zero Dependencies** - Batteries included via bundled binaries
 
-[![CI Status](https://github.com/0xdps/fake-db-generator/workflows/Test%20%26%20Build/badge.svg)](https://github.com/0xdps/fake-db-generator/actions)
+## 🚀 Quick Start
 
-[![Python Versions](https://img.shields.io/pypi/pyversions/fakestack.svg)](https://pypi.org/project/fakestack/)
-
-**Fakestack** is a Python tool that generates database tables and populates them with realistic fake data based on JSON schema definitions. Perfect for testing, development, and prototyping.
-
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)## Features
-
-## Features
-
-[![CI Status](https://github.com/0xdps/fake-db-generator/workflows/Test%20%26%20Build/badge.svg)](https://github.com/0xdps/fake-db-generator/actions)
-
-- 🚀 **Schema-Driven** - Define tables and data rules in JSON
-
-- 💡 **Realistic Data** - Uses Faker for authentic test data- Convert JSON schema to database tables
-
-- 🗄️ **Multi-Database** - MySQL, PostgreSQL, and SQLite support
-
-- 🔗 **Relationships** - Foreign key and referential data support**Fakestack** is a Python tool that allows you to generate database tables and populate them with realistic fake data based on a provided JSON schema. It provides a simple command-line interface to quickly create and populate database tables without the need for manual schema definition.- Populate tables with realistic fake data using Faker
-
-- ⚡ **Fast Setup** - Create and populate databases in seconds
-
-- Supports MySQL, PostgreSQL, and SQLite databases
-
-## Installation
-
-## ✨ Features- Reference data between tables (foreign keys)
+### Python
 
 ```bash
+pip install fakestack
 
-pip install fakestack- Generate unique and consistent test data
+# CLI usage
+fakestack -d .                    # Download example schema
+fakestack -c -p -f schema.json    # Create and populate
 
+# Python API
+from fakestack import fakestack
+fakestack(['-c', '-p', '-f', 'schema.json'])
 ```
 
-- 🚀 **Schema-Driven**: Define tables and data generation rules in JSON
+### Node.js / TypeScript
 
-Or install from source:
+```bash
+npm install fakestack
 
-- 💡 **Realistic Fake Data**: Uses Faker library for authentic-looking test data## Installation
+# CLI usage
+npx fakestack -d .                # Download example schema  
+npx fakestack -c -p -f schema.json # Create and populate
+
+# Programmatic usage
+const { fakestack } = require('fakestack');
+await fakestack(['-c', '-p', '-f', 'schema.json']);
+```
+
+### Go (Core)
+
+```bash
+cd golang
+go build -o fakestack
+./fakestack -d .
+./fakestack -c -p -f schema.json
+```
+
+## 📦 Installation
 
 ```bash
 
@@ -419,71 +433,91 @@ Fakestack uses Faker under the hood. Available generators include:
 
 More examples available in the [`fakestack/data/`](fakestack/data/) directory.
 
+## 📁 Repository Structure
+
+```
+fake-stack/
+├── golang/          # Go core implementation
+│   ├── *.go        # Source files
+│   ├── go.mod      # Dependencies
+│   └── README.md   # Go-specific documentation
+├── python/          # Python wrapper (PyPI: fakestack)
+│   ├── fakestack/  # Python module
+│   ├── tests/      # Integration tests
+│   ├── pyproject.toml
+│   └── README.md   # Python-specific documentation
+├── node/            # Node.js wrapper (npm: fakestack)
+│   ├── src/        # TypeScript source
+│   ├── dist/       # Compiled JavaScript
+│   ├── tests/      # Integration tests
+│   ├── package.json
+│   └── README.md   # Node-specific documentation
+├── bin/             # Compiled binaries for all platforms
+├── scripts/         # Build and release scripts
+└── .github/         # CI/CD workflows
+```
+
 ## 🤝 Contributing
 
-We welcome contributions! Please see:
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup
-- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - Community guidelines
+### Development Setup
 
-### Quick Contribution Guide
-
+**Go Core**:
 ```bash
-# Fork and clone
-git clone https://github.com/YOUR-USERNAME/fake-db-generator.git
-cd fake-db-generator
+cd golang
+go mod download
+go build
+go test -v ./...
+```
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install in development mode
+**Python**:
+```bash
+cd python
 pip install -e ".[dev]"
+pytest tests/ -v
+black fakestack/
+```
 
-# Create feature branch
-git checkout -b feature/amazing-feature
-
-# Make changes and test
-pytest
-black .
-isort .
-flake8 .
-
-# Commit and push
-git commit -m "feat: add amazing feature"
-git push origin feature/amazing-feature
+**Node.js**:
+```bash
+cd node
+npm install
+npm test
+npm run build
 ```
 
 ## 🧪 Testing
 
-Run tests with pytest:
+Each language has its own test suite:
 
 ```bash
-# Run all tests
-pytest
+# Go tests
+cd golang && go test -v ./...
 
-# With coverage
-pytest --cov=fakestack --cov-report=html
+# Python tests
+cd python && pytest tests/ -v
 
-# Run specific test file
-pytest tests/test_schema.py
+# Node.js tests
+cd node && npm test
 ```
+
+CI/CD runs tests for all platforms on every push.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file
 
-## 🙏 Acknowledgments
+## 🙏 Built With
 
-- Built with [Faker](https://github.com/joke2k/faker) for realistic data generation
-- Uses [SQLAlchemy](https://www.sqlalchemy.org/) for database abstraction
-- Uses [Pydantic](https://github.com/pydantic/pydantic) for data validation
+- [gofakeit](https://github.com/brianvoe/gofakeit) - Go fake data generation
+- Go database drivers: go-sqlite3, go-mysql-driver, lib/pq
 
 ## 📞 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/0xdps/fake-db-generator/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/0xdps/fake-db-generator/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/0xdps/fake-stack/issues)
+- 📦 **PyPI**: https://pypi.org/project/fakestack/
+- 📦 **npm**: https://www.npmjs.com/package/fakestack
 - 📖 **Documentation**: [README](https://github.com/0xdps/fake-db-generator#readme)
 
 ## 🔖 Version History

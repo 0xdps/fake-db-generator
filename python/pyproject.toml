@@ -33,11 +33,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "faker>=20.0.0",
-    "SQLAlchemy>=2.0.0",
-    "pydantic>=2.0.0",
-    "psycopg2-binary>=2.9.0",
-    "mysql-connector-python>=8.0.0",
+    # No runtime dependencies - Go binary handles everything
 ]
 
 [project.optional-dependencies]
@@ -74,11 +70,15 @@ fakestack = "fakestack.runner:main"
 version = {attr = "fakestack.__version__"}
 
 [tool.setuptools.packages.find]
+where = ["."]
 include = ["fakestack*"]
-exclude = ["tests*", "docs*", "examples*", "tutorials*"]
+exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-fakestack = ["data/*.json"]
+fakestack = [
+    "bin/*",
+    "bin/fakestack-*"
+]
 
 # Code Quality Tools Configuration
 

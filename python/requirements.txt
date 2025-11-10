@@ -1,0 +1,2 @@
+# No runtime dependencies - Go binary handles everything
+# Development dependencies are in pyproject.toml [project.optional-dependencies]

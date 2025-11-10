@@ -1,0 +1,62 @@
+{
+  "name": "fakestack",
+  "version": "2.1.0",
+  "description": "High-performance database generator - Generate databases from JSON schemas with realistic fake data",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "fakestack": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "node tests/integration.test.js"
+  },
+  "keywords": [
+    "faker",
+    "fake-data",
+    "test-data",
+    "database",
+    "schema",
+    "generator",
+    "mock",
+    "testing",
+    "mysql",
+    "postgresql",
+    "sqlite",
+    "fakestack"
+  ],
+  "author": "Devendra Pratap <dps.manit@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xdps/fake-stack.git",
+    "directory": "fakestack-js"
+  },
+  "bugs": {
+    "url": "https://github.com/0xdps/fake-stack/issues"
+  },
+  "homepage": "https://github.com/0xdps/fake-stack#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

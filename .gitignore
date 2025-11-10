@@ -282,3 +282,14 @@ $RECYCLE.BIN/
 # tutorials files
 !tutorials/*.md
 !tutorials/**/*.md
+
+# Go binaries and builds
+bin/
+core/fakestack
+core/fakestack.exe
+core/go.sum
+
+# Additional markdown files for Go migration
+!BUILD.md
+!MIGRATION.md
+!core/README.md

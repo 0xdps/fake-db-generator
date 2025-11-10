@@ -17,19 +17,37 @@ Thank you for your interest in contributing to Fakestack! This guide will help y
 ### 1. Fork and Clone
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/fake-db-generator.git
-cd fake-db-generator
+git clone https://github.com/YOUR-USERNAME/fake-stack.git
+cd fake-stack
 ```
 
 ### 2. Set Up Development Environment
 
+Choose the language you're working with:
+
+**Go Core:**
 ```bash
-# Create virtual environment
+cd golang
+go mod download
+go build
+go test -v ./...
+```
+
+**Python Wrapper:**
+```bash
+cd python
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install in development mode
 pip install -e ".[dev]"
+pytest tests/ -v
+```
+
+**Node.js Wrapper:**
+```bash
+cd node
+npm install
+npm run build
+npm test
 ```
 
 ### 3. Create a Branch
@@ -42,18 +60,39 @@ git checkout -b bugfix/fix-issue-123
 
 ## 🧪 Testing
 
+### Go Tests
 ```bash
-# Run all tests
-pytest
+cd golang
+go test -v ./...
+go test -race ./...
+go test -cover ./...
+```
 
-# Run with coverage
+### Python Tests
+```bash
+cd python
+pytest tests/ -v
 pytest --cov=fakestack --cov-report=html
+black --check fakestack/
+```
 
-# Check code quality
-black --check .
-isort --check-only .
-flake8 .
-mypy fakestack/
+### Node.js Tests
+```bash
+cd node
+npm test
+npm run lint
+npm run build
+```
+
+### Integration Tests
+
+All wrappers should be tested to ensure they properly execute the Go binary:
+```bash
+# Python integration test
+cd python && pytest tests/ -v
+
+# Node.js integration test
+cd node && npm test
 ```
 
 ## ✏️ Making Changes
@@ -223,41 +262,73 @@ Include:
 
 ### Running Specific Tests
 
+**Go:**
 ```bash
-# Run single test file
-pytest tests/test_schema.py
+cd golang
+go test -v -run TestSchemaParser
+go test -v ./generator/...
+```
 
-# Run single test function
+**Python:**
+```bash
+cd python
+pytest tests/test_schema.py -v
 pytest tests/test_schema.py::test_load_schema
-
-# Run tests matching pattern
 pytest -k "schema"
+```
+
+**Node.js:**
+```bash
+cd node
+npm test -- --testNamePattern="schema"
 ```
 
 ### Debugging
 
+**Go:**
 ```bash
-# Run with verbose output
+cd golang
+go test -v -run TestYourTest
+dlv test -- -test.run TestYourTest
+```
+
+**Python:**
+```bash
+cd python
 pytest -v -s
-
-# Drop into debugger on failure
 pytest --pdb
+```
 
-# Show print statements
-pytest -s
+**Node.js:**
+```bash
+cd node
+npm test -- --verbose
+node --inspect-brk node_modules/.bin/jest
 ```
 
 ### Local Package Build
 
+**Python:**
 ```bash
-# Build package
+cd python
 python -m build
-
-# Check package
 twine check dist/*
-
-# Install local build
 pip install dist/*.whl
+```
+
+**Node.js:**
+```bash
+cd node
+npm run build
+npm pack
+npm install -g fakestack-*.tgz
+```
+
+**Go Binary:**
+```bash
+cd golang
+go build -o fakestack
+./fakestack --help
 ```
 
 ## 📝 Documentation Standards
@@ -268,10 +339,38 @@ pip install dist/*.whl
 - Create tutorials for major features
 - Add examples to the examples/ directory
 
+## 📁 Project Structure
+
+```
+fake-stack/
+├── golang/          # Go core implementation
+│   ├── *.go        # Source files (main.go, schema.go, etc.)
+│   ├── go.mod      # Go dependencies
+│   └── README.md   # Go-specific docs
+├── python/          # Python wrapper (PyPI: fakestack)
+│   ├── fakestack/  # Python module
+│   │   ├── __init__.py
+│   │   ├── runner.py
+│   │   └── bin/    # Pre-built binaries
+│   ├── tests/      # Python integration tests
+│   ├── pyproject.toml
+│   └── README.md   # Python-specific docs
+├── node/            # Node.js wrapper (npm: fakestack)
+│   ├── src/        # TypeScript source
+│   ├── dist/       # Compiled JavaScript
+│   ├── bin/        # Pre-built binaries
+│   ├── tests/      # Node.js integration tests
+│   ├── package.json
+│   └── README.md   # Node-specific docs
+├── bin/             # Compiled binaries for all platforms
+├── scripts/         # Build and release scripts
+└── .github/         # CI/CD workflows
+```
+
 ## ❓ Questions?
 
-- Open a [Discussion](https://github.com/0xdps/fake-db-generator/discussions)
-- Check [Documentation](https://github.com/0xdps/fake-db-generator#readme)
+- Open a [Discussion](https://github.com/0xdps/fake-stack/discussions)
+- Check [Documentation](https://github.com/0xdps/fake-stack#readme)
 - Email: dps.manit@gmail.com
 
 ## 🙏 Thank You!
