@@ -2,9 +2,21 @@ name: Build & Test
 
 on:
   push:
-    branches: [ trunk, main, develop ]
+    branches: [ trunk, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - 'CHANGELOG.md'
+      - 'CONTRIBUTING.md'
   pull_request:
     branches: [ trunk, main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - 'CHANGELOG.md'
+      - 'CONTRIBUTING.md'
 
 jobs:
   # Build Go binaries for all platforms
