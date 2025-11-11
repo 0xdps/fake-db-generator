@@ -225,3 +225,7 @@ input:focus {
   outline: 2px solid var(--md-accent-fg-color);
   outline-offset: 2px;
 }
+
+.md-header__inner {
+    padding: 1rem 0 0 0;
+}

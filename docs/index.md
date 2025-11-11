@@ -44,7 +44,7 @@ hide:
     ---
 
     ```bash
-    brew install 0xdps/fakestack/fakestack
+    brew install 0xdps/fakestack
     ```
 
     [:octicons-arrow-right-24: Get started](getting-started.md)

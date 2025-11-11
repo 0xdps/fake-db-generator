@@ -418,7 +418,7 @@ After installing via Homebrew:
 
 ```bash
 # Install
-brew install 0xdps/fakestack/fakestack
+brew install 0xdps/fakestack
 
 # Use
 fakestack schema.json
