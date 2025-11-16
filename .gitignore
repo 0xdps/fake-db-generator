@@ -543,3 +543,4 @@ $RECYCLE.BIN/
 # Fakestack compiled binaries
 bin/
 **/bin/
+.vercel
