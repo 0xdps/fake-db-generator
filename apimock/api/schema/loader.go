@@ -317,7 +317,7 @@ func (r *Registry) GetRouteMethods(resourceName string) []string {
 func (r *Registry) SupportsMethod(resourceName string, method string) bool {
 	methods := r.GetRouteMethods(resourceName)
 	for _, m := range methods {
-		if strings.ToUpper(m) == strings.ToUpper(method) {
+		if strings.EqualFold(m, method) {
 			return true
 		}
 	}
