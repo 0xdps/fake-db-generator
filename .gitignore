@@ -342,6 +342,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+!apimock/lib/
 lib64/
 parts/
 sdist/

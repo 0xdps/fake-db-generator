@@ -37,3 +37,15 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore all Go files in api subfolders (Vercel should only see api/index.go)
+api/handlers/
+api/middleware/
+api/schema/
+api/lib/
+api/shared/
+api/main.go
+api/api/
+
+# Ignore Go source folder
+go-api/
