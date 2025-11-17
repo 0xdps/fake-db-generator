@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 )
 
+// Version is set during build via -ldflags
+var Version = "1.0.0"
+
 const exampleSchema = `{
   "database": {
     "dbtype": "sqlite",
@@ -74,6 +77,9 @@ func main() {
 	
 	downloadSchema := flag.String("d", "", "download example schema to specified path (use '.' for current directory)")
 	downloadSchemaLong := flag.String("download-schema", "", "download example schema to specified path")
+	
+	versionFlag := flag.Bool("v", false, "show version information")
+	versionFlagLong := flag.Bool("version", false, "show version information")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Fakestack - Full-Stack Fake Data Generator\n\n")
@@ -83,6 +89,12 @@ func main() {
 	}
 
 	flag.Parse()
+	
+	// Handle version flag
+	if *versionFlag || *versionFlagLong {
+		fmt.Printf("fakestack version %s\n", Version)
+		return
+	}
 
 	// Merge short and long flags
 	create := *createTable || *createTableLong

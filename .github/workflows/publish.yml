@@ -129,13 +129,13 @@ jobs:
           export GOARCH=arm64
         fi
         
-        OUTPUT="../bin/fakestack-${{ matrix.platform }}"
-        if [[ "${{ matrix.platform }}" == *"windows"* ]]; then
+        OUTPUT="bin/fakestack-${{ matrix.platform }}"
+        if [ "${{ matrix.goos }}" = "windows" ]; then
           OUTPUT="${OUTPUT}.exe"
         fi
         
-        mkdir -p ../bin
-        go build -ldflags="-s -w" -o "$OUTPUT"
+        VERSION="${{ needs.validate.outputs.version }}"
+        go build -ldflags="-s -w -X main.Version=${VERSION}" -o "$OUTPUT"
     
     - name: Upload binary
       uses: actions/upload-artifact@v4

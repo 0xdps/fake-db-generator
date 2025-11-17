@@ -84,7 +84,8 @@ jobs:
           OUTPUT="${OUTPUT}.exe"
         fi
         
-        go build -ldflags="-s -w" -o "$OUTPUT"
+        VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
+        go build -ldflags="-s -w -X main.Version=${VERSION}" -o "$OUTPUT"
     
     - name: Upload binary
       uses: actions/upload-artifact@v4
