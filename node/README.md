@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
+    <img src="https://raw.githubusercontent.com/0xdps/fake-stack/trunk/assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
 </p>
 
 <h1 align="center">Fakestack</h1>
