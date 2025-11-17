@@ -43,7 +43,6 @@ api/handlers/
 api/middleware/
 api/schema/
 api/lib/
-api/shared/
 api/main.go
 api/api/
 

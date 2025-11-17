@@ -1,15 +1,9 @@
 {
   "version": 2,
-  "env": {
-    "SCHEMAS_DIR": "shared/schemas"
-  },
   "builds": [
     {
       "src": "api/index.go",
-      "use": "@vercel/go",
-      "config": {
-        "includeFiles": ["shared/schemas/**"]
-      }
+      "use": "@vercel/go"
     },
     {
       "src": "web/package.json",

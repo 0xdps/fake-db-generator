@@ -23,29 +23,27 @@ func init() {
 	
 	registry = schema.NewRegistry()
 	schemasDir := os.Getenv("SCHEMAS_DIR")
+	
 	if schemasDir == "" {
-		// Try multiple paths to find schemas
-		possiblePaths := []string{
-			filepath.Join("shared", "schemas"),           // Vercel production (includeFiles makes it relative)
-			filepath.Join("..", "shared", "schemas"),     // From api/ directory
-			filepath.Join("..", "..", "..", "shared", "schemas"), // From Vercel dev cache
-		}
+		// Detect environment and set appropriate path
+		cwd, _ := os.Getwd()
 		
-		var err error
-		for _, path := range possiblePaths {
-			if err = registry.LoadSchemas(path); err == nil {
-				break
-			}
+		// Check if we're in Vercel production (CWD is /var/task)
+		if cwd == "/var/task" {
+			// In Vercel production, schemas copied to api directory
+			schemasDir = "schemas"
+		} else if strings.Contains(cwd, ".vercel/cache") {
+			// In Vercel dev, we're in cache directory
+			schemasDir = filepath.Join("..", "..", "..", "shared", "schemas")
+		} else {
+			// Local development or other environment
+			schemasDir = filepath.Join("..", "shared", "schemas")
 		}
-		
-		if err != nil {
-			cwd, _ := os.Getwd()
-			panic(fmt.Sprintf("Failed to load schemas. CWD: %s, Error: %v", cwd, err))
-		}
-	} else {
-		if err := registry.LoadSchemas(schemasDir); err != nil {
-			panic("Failed to load schemas: " + err.Error())
-		}
+	}
+	
+	if err := registry.LoadSchemas(schemasDir); err != nil {
+		cwd, _ := os.Getwd()
+		panic(fmt.Sprintf("Failed to load schemas from '%s'. CWD: %s, Error: %v", schemasDir, cwd, err))
 	}
 	
 	router = gin.New()
