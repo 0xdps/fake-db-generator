@@ -9,7 +9,7 @@ import (
 )
 
 // Version is set during build via -ldflags
-var Version = "1.0.0"
+var Version = "1.0.1"
 
 const exampleSchema = `{
   "database": {

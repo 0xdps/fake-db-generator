@@ -4,7 +4,7 @@ Generate databases from JSON schemas with realistic fake data.
 Powered by a Go core for blazing-fast performance!
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Devendra Pratap"
 __email__ = "dps.manit@gmail.com"
 __license__ = "MIT"
