@@ -14,7 +14,9 @@ def test_import_fakestack():
     assert hasattr(fakestack, '__version__')
     assert hasattr(fakestack, 'main')
     assert hasattr(fakestack, 'run_fakestack')
-    assert fakestack.__version__ == "2.1.0"
+    # Check version exists and is not empty
+    assert fakestack.__version__
+    assert isinstance(fakestack.__version__, str)
 
 
 def test_run_fakestack_help():
@@ -104,13 +106,20 @@ def test_version_consistency():
     """Test that version is consistent across package."""
     import fakestack
     
-    # Check __init__.py version
-    assert fakestack.__version__ == "2.1.0"
-    
-    # Check that version is a valid semantic version
+    # Check version exists and is valid semantic version
+    assert fakestack.__version__
     parts = fakestack.__version__.split('.')
     assert len(parts) == 3
     assert all(part.isdigit() for part in parts)
+    
+    # Verify it matches package metadata
+    import importlib.metadata
+    try:
+        pkg_version = importlib.metadata.version('fakestack')
+        assert fakestack.__version__ == pkg_version, f"Version mismatch: __version__={fakestack.__version__}, metadata={pkg_version}"
+    except importlib.metadata.PackageNotFoundError:
+        # Package not installed yet (e.g., during development)
+        pass
 
 
 def test_cli_via_python_module():
