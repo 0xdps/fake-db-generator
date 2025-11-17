@@ -1,9 +1,26 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "api/index.go",
+      "use": "@vercel/go",
+      "config": {
+        "includeFiles": ["shared/schemas/**"]
+      }
+    },
+    {
+      "src": "web/package.json",
+      "use": "@vercel/next"
+    }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "/api/index.go"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/web/$1"
     }
   ]
 }

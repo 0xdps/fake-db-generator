@@ -24,19 +24,11 @@ func init() {
 	registry = schema.NewRegistry()
 	schemasDir := os.Getenv("SCHEMAS_DIR")
 	if schemasDir == "" {
-		// Try multiple paths to find schemas (Vercel runs from cache directory)
+		// Try multiple paths to find schemas
 		possiblePaths := []string{
+			filepath.Join("shared", "schemas"),           // Vercel production (includeFiles makes it relative)
 			filepath.Join("..", "shared", "schemas"),     // From api/ directory
-			filepath.Join("shared", "schemas"),           // From project root
-			filepath.Join("..", "..", "..", "shared", "schemas"), // From Vercel cache
-		}
-		
-		// Check LAMBDA_TASK_ROOT for production
-		if taskRoot := os.Getenv("LAMBDA_TASK_ROOT"); taskRoot != "" {
-			possiblePaths = append([]string{
-				filepath.Join(taskRoot, "..", "shared", "schemas"),
-				filepath.Join(taskRoot, "shared", "schemas"),
-			}, possiblePaths...)
+			filepath.Join("..", "..", "..", "shared", "schemas"), // From Vercel dev cache
 		}
 		
 		var err error
