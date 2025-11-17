@@ -7,7 +7,7 @@ hide:
 <div class="hero" markdown>
 
 <p align="center">
-  <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="250"/>
+  <img src="assets/fake-stack.svg" alt="Fakestack Logo" width="250"/>
 </p>
 
 # Fakestack
