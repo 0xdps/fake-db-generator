@@ -1,6 +1,12 @@
-# Fakestack - Python Package
+<p align="center">
+  <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
+</p>
 
+<!-- <h1 align="center">Fakestack - Python Package</h1> -->
+
+<p align="center">
 Python wrapper for the high-performance Fakestack database generator.
+</p>
 
 ## Installation
 

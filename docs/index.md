@@ -6,6 +6,10 @@ hide:
 
 <div class="hero" markdown>
 
+<p align="center">
+  <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="250"/>
+</p>
+
 # Fakestack
 
 ### Generate realistic fake data and populate databases with ease

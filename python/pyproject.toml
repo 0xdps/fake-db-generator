@@ -57,11 +57,11 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/0xdps/fake-db-generator"
-Documentation = "https://github.com/0xdps/fake-db-generator#readme"
-Repository = "https://github.com/0xdps/fake-db-generator.git"
-Issues = "https://github.com/0xdps/fake-db-generator/issues"
-Changelog = "https://github.com/0xdps/fake-db-generator/blob/trunk/CHANGELOG.md"
+Homepage = "https://github.com/0xdps/fake-stack"
+Documentation = "https://fake-stack.readthedocs.io/"
+Repository = "https://github.com/0xdps/fake-stack.git"
+Issues = "https://github.com/0xdps/fake-stack/issues"
+Changelog = "https://github.com/0xdps/fake-stack/blob/trunk/CHANGELOG.md"
 
 [project.scripts]
 fakestack = "fakestack.runner:main"

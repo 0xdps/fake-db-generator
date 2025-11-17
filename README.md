@@ -1,13 +1,24 @@
-# Fakestack
+<p align="center">
+  <img src="assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
+</p>
+
+<!-- <h1 align="center">Fakestack</h1> -->
+
+<p align="center">
 
 [![PyPI](https://img.shields.io/pypi/v/fakestack)](https://pypi.org/project/fakestack/)
 [![npm](https://img.shields.io/npm/v/fakestack)](https://www.npmjs.com/package/fakestack)
 [![Python](https://img.shields.io/pypi/pyversions/fakestack)](https://pypi.org/project/fakestack/)
 [![Node](https://img.shields.io/node/v/fakestack)](https://www.npmjs.com/package/fakestack)
+[![Documentation](https://readthedocs.org/projects/fake-stack/badge/?version=latest)](https://fake-stack.readthedocs.io/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/0xdps/fake-stack)](https://goreportcard.com/report/github.com/0xdps/fake-stack)
 
-> **High-performance database generator with realistic fake data**
+</p>
+
+<p align="center">
+  <strong>High-performance database generator with realistic fake data</strong>
+</p>
 
 Generate databases from JSON schemas with realistic fake data. **10-50x faster** than pure Python/JavaScript implementations thanks to a Go core with zero-dependency wrappers for Python and Node.js.
 
@@ -272,6 +283,8 @@ Create a `schema.json` file defining your database structure:
 
 ## 📚 Documentation
 
+📖 **[Full Documentation on ReadTheDocs](https://fake-stack.readthedocs.io/)** - Complete documentation with examples and tutorials
+
 - **[Getting Started](docs/getting-started.md)** - Installation and basic usage
 - **[Schema Reference](docs/schema-reference.md)** - Complete schema documentation
 - **[Data Generators](docs/generators.md)** - All available data generators
@@ -375,7 +388,8 @@ Built with:
 
 ## 📞 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/0xdps/fake-stack/issues)
+- � **Documentation**: [ReadTheDocs](https://fake-stack.readthedocs.io/)
+- �🐛 **Issues**: [GitHub Issues](https://github.com/0xdps/fake-stack/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/0xdps/fake-stack/discussions)
 - 📦 **PyPI**: https://pypi.org/project/fakestack/
 - 📦 **npm**: https://www.npmjs.com/package/fakestack

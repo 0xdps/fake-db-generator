@@ -342,7 +342,6 @@ downloads/
 eggs/
 .eggs/
 lib/
-!apimock/lib/
 lib64/
 parts/
 sdist/
@@ -544,4 +543,6 @@ $RECYCLE.BIN/
 # Fakestack compiled binaries
 bin/
 **/bin/
-.vercel
+.vercel/
+
+PUBLISHING_CHECKLIST.md

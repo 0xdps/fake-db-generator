@@ -1,6 +1,12 @@
-# Fakestack (Node.js)
+<p align="center">
+  <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
+</p>
 
+<!-- <h1 align="center">Fakestack (Node.js)</h1> -->
+
+<p align="center">
 High-performance database generator powered by Go. Generate database tables and populate them with realistic fake data from JSON schemas.
+</p>
 
 ## Features
 
@@ -158,7 +164,9 @@ const options: FakestackOptions = {
 await fakestack(options);
 ```
 
-## Documentation
+## 📚 Documentation
+
+📖 **[Full Documentation on ReadTheDocs](https://fake-stack.readthedocs.io/)** - Complete documentation with examples and tutorials
 
 - [Main Repository](https://github.com/0xdps/fake-stack)
 - [Python Package](https://pypi.org/project/fakestack/)

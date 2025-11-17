@@ -1,6 +1,12 @@
-# Fakestack Go Core
+<p align="center">
+  <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
+</p>
 
-High-performance core implementation of Fakestack in Go, providing the engine for fake data generation and database population. This binary is used by both the Python and Node.js wrappers.
+<!-- <h1 align="center">Fakestack - Go Core</h1> -->
+
+<p align="center">
+High-performance database generator written in Go.
+</p> This binary is used by both the Python and Node.js wrappers.
 
 ## Prerequisites
 

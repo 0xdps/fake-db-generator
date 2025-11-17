@@ -37,7 +37,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/0xdps/fake-stack.git",
-    "directory": "fakestack-js"
+    "directory": "node"
   },
   "bugs": {
     "url": "https://github.com/0xdps/fake-stack/issues"
