@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,21 +24,53 @@ func init() {
 	registry = schema.NewRegistry()
 	schemasDir := os.Getenv("SCHEMAS_DIR")
 	if schemasDir == "" {
-		schemasDir = filepath.Join("..", "..", "shared", "schemas")
-	}
-	
-	if err := registry.LoadSchemas(schemasDir); err != nil {
-		schemasDir = filepath.Join("shared", "schemas")
+		// Try multiple paths to find schemas (Vercel runs from cache directory)
+		possiblePaths := []string{
+			filepath.Join("..", "shared", "schemas"),     // From api/ directory
+			filepath.Join("shared", "schemas"),           // From project root
+			filepath.Join("..", "..", "..", "shared", "schemas"), // From Vercel cache
+		}
+		
+		// Check LAMBDA_TASK_ROOT for production
+		if taskRoot := os.Getenv("LAMBDA_TASK_ROOT"); taskRoot != "" {
+			possiblePaths = append([]string{
+				filepath.Join(taskRoot, "..", "shared", "schemas"),
+				filepath.Join(taskRoot, "shared", "schemas"),
+			}, possiblePaths...)
+		}
+		
+		var err error
+		for _, path := range possiblePaths {
+			if err = registry.LoadSchemas(path); err == nil {
+				break
+			}
+		}
+		
+		if err != nil {
+			cwd, _ := os.Getwd()
+			panic(fmt.Sprintf("Failed to load schemas. CWD: %s, Error: %v", cwd, err))
+		}
+	} else {
 		if err := registry.LoadSchemas(schemasDir); err != nil {
 			panic("Failed to load schemas: " + err.Error())
 		}
 	}
 	
 	router = gin.New()
-	router.Use(gin.Recovery())
+	
+	// Custom recovery middleware for 500 errors
+	router.Use(gin.CustomRecovery(func(c *gin.Context, recovered interface{}) {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Internal server error",
+			"message": "An unexpected error occurred",
+			"details": fmt.Sprintf("%v", recovered),
+		})
+	}))
+	
 	router.Use(middleware.SetupCORS())
 	
-	router.GET("/", func(c *gin.Context) {
+	// Health check endpoint
+	router.GET("/api", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message":   "apimock.codes API",
 			"version":   "1.0.0",
@@ -48,45 +81,56 @@ func init() {
 	
 	dynamicHandler := handlers.NewDynamicHandler(registry)
 	
-	api := router.Group("/api")
-	{
-		resourceNames := registry.GetAllResourceNames()
-		nestedResources := []string{}
-		regularResources := []string{}
-		
-		for _, name := range resourceNames {
-			routePath := registry.GetRoutePath(name)
-			if strings.Contains(routePath, ":") {
-				nestedResources = append(nestedResources, name)
-			} else {
-				regularResources = append(regularResources, name)
-			}
-		}
-		
-		for _, resourceName := range nestedResources {
-			routePath := registry.GetRoutePath(resourceName)
-			api.GET(routePath, dynamicHandler.GetCollection(resourceName))
-			api.GET(routePath+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
-			
-			for _, alias := range registry.GetRouteAliases(resourceName) {
-				api.GET(alias, dynamicHandler.GetCollection(resourceName))
-				api.GET(alias+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
-			}
-		}
-		
-		for _, resourceName := range regularResources {
-			routePath := registry.GetRoutePath(resourceName)
-			api.GET(routePath, dynamicHandler.GetCollection(resourceName))
-			api.GET(routePath+"/:id", dynamicHandler.GetSingle(resourceName))
-			api.GET(routePath+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
-			
-			for _, alias := range registry.GetRouteAliases(resourceName) {
-				api.GET(alias, dynamicHandler.GetCollection(resourceName))
-				api.GET(alias+"/:id", dynamicHandler.GetSingle(resourceName))
-				api.GET(alias+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
-			}
+	resourceNames := registry.GetAllResourceNames()
+	nestedResources := []string{}
+	regularResources := []string{}
+	
+	for _, name := range resourceNames {
+		routePath := registry.GetRoutePath(name)
+		if strings.Contains(routePath, ":") {
+			nestedResources = append(nestedResources, name)
+		} else {
+			regularResources = append(regularResources, name)
 		}
 	}
+	
+	// Register routes at /api prefix (Vercel passes full path)
+	api := router.Group("/api")
+	
+	for _, resourceName := range nestedResources {
+		routePath := registry.GetRoutePath(resourceName)
+		api.GET(routePath, dynamicHandler.GetCollection(resourceName))
+		api.GET(routePath+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
+		
+		for _, alias := range registry.GetRouteAliases(resourceName) {
+			api.GET(alias, dynamicHandler.GetCollection(resourceName))
+			api.GET(alias+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
+		}
+	}
+	
+	for _, resourceName := range regularResources {
+		routePath := registry.GetRoutePath(resourceName)
+		api.GET(routePath, dynamicHandler.GetCollection(resourceName))
+		api.GET(routePath+"/:id", dynamicHandler.GetSingle(resourceName))
+		api.GET(routePath+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
+		
+		for _, alias := range registry.GetRouteAliases(resourceName) {
+			api.GET(alias, dynamicHandler.GetCollection(resourceName))
+			api.GET(alias+"/:id", dynamicHandler.GetSingle(resourceName))
+			api.GET(alias+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
+		}
+	}
+	
+	// 404 handler for unmatched routes
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":     "Route not found",
+			"path":      c.Request.URL.Path,
+			"method":    c.Request.Method,
+			"message":   "The requested endpoint does not exist",
+			"available": registry.GetAllResourceNames(),
+		})
+	})
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
