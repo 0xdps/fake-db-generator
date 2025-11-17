@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.1.0] - 2025-01-XX
+## [1.0.0] - 2025-11-17
 
-### 🚀 Major Release - Go Core Architecture & Multi-Language Support
+### 🚀 Initial Release - High-Performance Database Generator
 
-This release represents a complete architectural overhaul of Fakestack, replacing the Python implementation with a high-performance Go core and adding official npm support. The project now follows a language-based structure with unified package naming.
+First stable release of Fakestack - a high-performance database generator powered by Go with multi-language support.
 
 ### Added
 
@@ -147,102 +147,36 @@ cd node && npm install
 cd golang && go build
 ```
 
-### Backward Compatibility
+### Installation
 
-✅ **100% backward compatible** with v2.0.x for Python users
-- Same CLI flags and behavior
-- Same JSON schema format
-- Same output and database structure
-- No code changes required for existing Python users
-
-✅ **New capability**: npm support added without affecting Python users
-
-## [2.0.0] - 2025-11-09
-
-### Added
-- 🎉 **Major rebranding**: Renamed from `fake-db-generator` (fdg) to `Fakestack`
-- 📦 Modern `pyproject.toml` configuration replacing `setup.py`
-- 🔄 GitHub Actions CI/CD workflows for testing and publishing
-- 🧪 Multi-platform testing (Ubuntu, Windows, macOS)
-- 🐍 Python 3.8-3.13 compatibility testing
-- 📝 Comprehensive documentation:
-  - `CONTRIBUTING.md` - Contribution guidelines
-  - `CODE_OF_CONDUCT.md` - Community standards
-  - `SECURITY.md` - Security policy
-  - `DEVELOPMENT.md` - Developer guide
-  - `CHANGELOG.md` - Version history
-- 🎨 Professional README with badges and better structure
-- 🛠️ Development tools configuration (black, isort, flake8, mypy, pytest)
-- ✅ Code quality checks in CI pipeline
-- 📊 Test coverage reporting
-
-### Changed
-- ⚡ **Breaking**: Command changed from `fdg` to `fakestack`
-- ⚡ **Breaking**: Package name changed from `fdg` to `fakestack`
-- ⚡ **Breaking**: Import path changed from `fdg` to `fakestack`
-- 📦 Updated dependencies to use modern version constraints
-- 🔧 Improved package metadata and classifiers
-- 📖 Enhanced documentation with emojis and better formatting
-- 🎯 More descriptive help messages in CLI
-
-### Fixed
-- Package data files now properly included in distribution
-- Import paths updated throughout codebase
-
-### Migration Guide
-
-If you were using version 1.x.x:
-
-**Command Line:**
+**Python:**
 ```bash
-# Old
-fdg -c -f schema.json
-
-# New
-fakestack -c -f schema.json
-```
-
-**Python Imports:**
-```python
-# Old
-from fdg.models import DbSchema
-
-# New  
-from fakestack.models import DbSchema
-```
-
-**Installation:**
-```bash
-# Old
-pip install fake-db-generator
-
-# New
 pip install fakestack
 ```
 
-## [1.2.1] - 2024-XX-XX
+**Node.js:**
+```bash
+npm install fakestack
+```
 
-### Fixed
-- Minor bug fixes and improvements
+**Homebrew:**
+```bash
+brew install 0xdps/tap/fakestack
+```
 
-## [1.2.0] - 2024-XX-XX
+### Quick Start
 
-### Added
-- Additional database support improvements
-- Enhanced data generation capabilities
+```bash
+# Download example schema
+fakestack -d .
 
-## [1.0.0] - 2024-XX-XX
+# Create tables and populate data
+fakestack -c -p -f schema.json
+```
 
-### Added
-- Initial stable release as `fake-db-generator`
-- MySQL, PostgreSQL, and SQLite support
-- JSON schema-based table generation
-- Faker integration for realistic data
-- Command-line interface
-- Example schemas
+---
 
-[Unreleased]: https://github.com/0xdps/fake-db-generator/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/0xdps/fake-db-generator/compare/v1.2.1...v2.0.0
-[1.2.1]: https://github.com/0xdps/fake-db-generator/compare/v1.2.0...v1.2.1
-[1.2.0]: https://github.com/0xdps/fake-db-generator/compare/v1.0.0...v1.2.0
-[1.0.0]: https://github.com/0xdps/fake-db-generator/releases/tag/v1.0.0
+**Full Documentation**: https://fake-stack.readthedocs.io/
+
+[Unreleased]: https://github.com/0xdps/fake-stack/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/0xdps/fake-stack/releases/tag/v1.0.0
