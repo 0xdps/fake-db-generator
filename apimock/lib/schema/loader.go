@@ -1,14 +1,19 @@
 package schema
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/brianvoe/gofakeit/v7"
 )
+
+//go:embed embedded/*.json
+var embeddedSchemas embed.FS
 
 // RouteConfig defines custom route configuration
 type RouteConfig struct {
@@ -70,6 +75,31 @@ func NewRegistry() *Registry {
 	}
 }
 
+// LoadEmbeddedSchemas loads all schemas from embedded files
+func (r *Registry) LoadEmbeddedSchemas() error {
+	entries, err := fs.ReadDir(embeddedSchemas, "embedded")
+	if err != nil {
+		return fmt.Errorf("failed to read embedded schemas: %w", err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
+			continue
+		}
+
+		data, err := embeddedSchemas.ReadFile(filepath.Join("embedded", entry.Name()))
+		if err != nil {
+			return fmt.Errorf("failed to read embedded schema %s: %w", entry.Name(), err)
+		}
+
+		if err := r.loadSchemaFromData(data, entry.Name()); err != nil {
+			return fmt.Errorf("failed to load schema %s: %w", entry.Name(), err)
+		}
+	}
+
+	return nil
+}
+
 // LoadSchemas loads all schemas from the shared/schemas directory
 func (r *Registry) LoadSchemas(schemasDir string) error {
 	files, err := os.ReadDir(schemasDir)
@@ -98,6 +128,11 @@ func (r *Registry) LoadSchema(path string) error {
 		return fmt.Errorf("failed to read schema file: %w", err)
 	}
 
+	return r.loadSchemaFromData(data, filepath.Base(path))
+}
+
+// loadSchemaFromData loads schema from byte data
+func (r *Registry) loadSchemaFromData(data []byte, filename string) error {
 	var schema Schema
 	if err := json.Unmarshal(data, &schema); err != nil {
 		return fmt.Errorf("failed to parse schema: %w", err)

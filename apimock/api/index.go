@@ -3,8 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/0xdps/fake-stack/apimock/lib/handlers"
@@ -22,28 +20,10 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 	
 	registry = schema.NewRegistry()
-	schemasDir := os.Getenv("SCHEMAS_DIR")
 	
-	if schemasDir == "" {
-		// Detect environment and set appropriate path
-		cwd, _ := os.Getwd()
-		
-		// Check if we're in Vercel production (CWD is /var/task)
-		if cwd == "/var/task" {
-			// In Vercel production, schemas copied to api directory
-			schemasDir = "schemas"
-		} else if strings.Contains(cwd, ".vercel/cache") {
-			// In Vercel dev, we're in cache directory
-			schemasDir = filepath.Join("..", "..", "..", "shared", "schemas")
-		} else {
-			// Local development or other environment
-			schemasDir = filepath.Join("..", "shared", "schemas")
-		}
-	}
-	
-	if err := registry.LoadSchemas(schemasDir); err != nil {
-		cwd, _ := os.Getwd()
-		panic(fmt.Sprintf("Failed to load schemas from '%s'. CWD: %s, Error: %v", schemasDir, cwd, err))
+	// Use embedded schemas for production reliability
+	if err := registry.LoadEmbeddedSchemas(); err != nil {
+		panic(fmt.Sprintf("Failed to load embedded schemas: %v", err))
 	}
 	
 	router = gin.New()

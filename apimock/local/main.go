@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/0xdps/fake-stack/apimock/lib/handlers"
@@ -18,16 +17,10 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// Load schemas
+	// Load schemas from embedded files
 	registry := schema.NewRegistry()
-	schemasDir := os.Getenv("SCHEMAS_DIR")
-	if schemasDir == "" {
-		// Default to shared/schemas from the local directory (go up one level)
-		schemasDir = filepath.Join("..", "shared", "schemas")
-	}
-
-	if err := registry.LoadSchemas(schemasDir); err != nil {
-		log.Fatalf("Failed to load schemas: %v", err)
+	if err := registry.LoadEmbeddedSchemas(); err != nil {
+		log.Fatalf("Failed to load embedded schemas: %v", err)
 	}
 
 	log.Printf("Loaded %d schemas: %v", len(registry.Schemas), registry.GetAllResourceNames())
