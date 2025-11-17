@@ -129,11 +129,12 @@ jobs:
           export GOARCH=arm64
         fi
         
-        OUTPUT="bin/fakestack-${{ matrix.platform }}"
-        if [ "${{ matrix.goos }}" = "windows" ]; then
+        OUTPUT="../bin/fakestack-${{ matrix.platform }}"
+        if [[ "${{ matrix.platform }}" == *"windows"* ]]; then
           OUTPUT="${OUTPUT}.exe"
         fi
         
+        mkdir -p ../bin
         VERSION="${{ needs.validate.outputs.version }}"
         go build -ldflags="-s -w -X main.Version=${VERSION}" -o "$OUTPUT"
     
