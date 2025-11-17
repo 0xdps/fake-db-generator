@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "env": {
+    "SCHEMAS_DIR": "shared/schemas"
+  },
   "builds": [
     {
       "src": "api/index.go",
