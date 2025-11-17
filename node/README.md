@@ -2,7 +2,7 @@
   <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
 </p>
 
-<!-- <h1 align="center">Fakestack (Node.js)</h1> -->
+<h1 align="center">Fakestack</h1>
 
 <p align="center">
 High-performance database generator powered by Go. Generate database tables and populate them with realistic fake data from JSON schemas.

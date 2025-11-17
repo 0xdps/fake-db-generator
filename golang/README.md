@@ -2,7 +2,7 @@
   <img src="../assets/fake-stack.svg" alt="Fakestack Logo" width="200"/>
 </p>
 
-<!-- <h1 align="center">Fakestack - Go Core</h1> -->
+<h1 align="center">Fakestack</h1>
 
 <p align="center">
 High-performance database generator written in Go.
