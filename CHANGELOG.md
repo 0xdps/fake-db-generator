@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-11-17
+
+### Added
+- Added version flag (`-v`, `--version`) to Go binary to display version information
+- Version is now injected at build time using ldflags
+
+### Fixed
+- Fixed logo display across all package READMEs and documentation
+  - Python README: Uses absolute GitHub URL for PyPI compatibility
+  - Node.js README: Uses relative path (works on npm)
+  - Documentation: Uses symlinked assets folder
+- Fixed binary build paths in publish workflow
+- Fixed test assertions to use dynamic version checking instead of hardcoded values
+
+### Changed
+- Improved package documentation visibility on PyPI and npm
+- Updated all READMEs with consistent branding and logo display
+- Enhanced version consistency validation in CI/CD workflows
+
 ## [1.0.0] - 2025-11-17
 
 ### 🚀 Initial Release - High-Performance Database Generator
