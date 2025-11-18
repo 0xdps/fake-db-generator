@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- *(none yet)*
+
+
+## [1.1.0] - 2025-11-18
+
+### Added
 - **Template Generator**: Custom generator for creating data patterns using templates
   - Syntax: `{{generator|modifier1|modifier2}}`
   - Supports all built-in generators (name, email, word, uuid, random_int, etc.)
@@ -65,11 +72,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Uninstall Script**: Created `scripts/uninstall.sh` for removing fakestack from npm, pip, and Homebrew
 
 ### Changed
+- **Go Module Structure**: Moved Go module to repository root for better Go Report Card compatibility
+  - Moved `go.mod` and `go.sum` from `golang/` to repository root
+  - Added root-level `doc.go` for package documentation
+  - Updated import paths and build scripts accordingly
+  - Improved Go Report Card analysis and grading
 - **Homebrew Tap**: Renamed from `homebrew-fakestack` to `homebrew-packages` for future tool support
   - New installation: `brew tap 0xdps/packages && brew install fakestack`
   - Prepares tap for additional tools beyond fakestack
 - **Database Driver**: Added Microsoft SQL Server driver (`github.com/denisenkom/go-mssqldb`)
 - **Documentation**: Updated all installation instructions to use new tap name
+- **ReadTheDocs Configuration**: Improved documentation build process
+  - Added `docs/mkdocs.yml` for documentation structure
+  - Updated `docs/.readthedocs.yaml` with proper build configuration
+  - Fixed mkdocs-material plugin installation order
 
 ### Fixed
 - **MSSQL Compatibility**: Fixed SQL syntax issues for MS SQL Server
@@ -78,6 +94,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated `CREATE TABLE` to use `IF OBJECT_ID` syntax
   - Updated `DROP TABLE` to use `IF OBJECT_ID` syntax
   - Fixed sqlcmd path in workflow to `/opt/mssql-tools18/bin/sqlcmd` with `-C` flag
+  - Fixed BOOLEAN type mapping to use BIT for MSSQL compatibility
+  - Corrected MSSQL password in test schema to match service configuration
+- **Database Type Handling**: Fixed SQL type mapping and database configuration issues
+  - Added support for `float` column type (maps to REAL for SQLite, FLOAT for others)
+  - Added support for `decimal` column type with precision and scale
+  - Fixed PostgreSQL driver name handling (accepts both `postgres` and `psql` with alias)
+  - Fixed SQLite schema configuration (changed `host` to `database` field)
+  - Corrected database type constants and connection string handling
+- **Test Infrastructure**: Fixed database test failures and schema validation
+  - Increased locale field length from 5 to 20 characters
+  - Combined create and populate test commands for proper timing
+  - Fixed schema merging with database-specific configurations using `jq`
 - **Deprecation Fix**: Replaced deprecated `strings.Title()` with Unicode-compliant `cases.Title()`
   - Added dependency: `golang.org/x/text v0.31.0`
   - Fixed deprecation warning in Go 1.24.0

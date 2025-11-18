@@ -55,6 +55,9 @@ GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../bin/fakestack-windows-
 ## Usage
 
 ```bash
+# Generate schema interactively
+./fakestack -g . 
+
 # Download example schema
 ./fakestack -d <directory>
 
@@ -70,11 +73,14 @@ GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../bin/fakestack-windows-
 
 ## Features
 
-✅ **50+ Fake Data Generators** - Names, emails, addresses, phone numbers, dates, etc.  
-✅ **Multi-Database Support** - SQLite, MySQL, PostgreSQL  
+✅ **116+ Fake Data Generators** - Financial, products, animals, food, vehicles, books, and more across 12 categories  
+✅ **Template Generator** - Custom data patterns (SKUs, IDs, codes) with modifiers (upper, lower, title, trim, truncate)  
+✅ **Interactive Schema Generator** - Built-in generator with 10 pre-built templates  
+✅ **Multi-Database Support** - SQLite, MySQL, PostgreSQL, MariaDB, MS SQL Server, CockroachDB  
 ✅ **Foreign Key Relationships** - Automatic FK resolution  
 ✅ **Unique Value Generation** - Guaranteed unique values for unique columns  
-✅ **Custom Generators** - person, user, random_from, etc.  
+✅ **Custom Generators** - person, user, random_from, template, etc.  
+✅ **Range Support** - integer, float, decimal generators with configurable min/max  
 ✅ **Progress Tracking** - Real-time feedback on data generation  
 ✅ **High Performance** - 10-50x faster than pure Python implementations
 
@@ -102,8 +108,10 @@ golang/
 
 - **gofakeit/v7** - Comprehensive fake data generation
 - **go-sqlite3** - SQLite driver (CGO)
-- **go-mysql-driver** - MySQL driver
-- **lib/pq** - PostgreSQL driver
+- **go-mysql-driver** - MySQL driver (also used for MariaDB)
+- **lib/pq** - PostgreSQL driver (also used for CockroachDB)
+- **go-mssqldb** - Microsoft SQL Server driver
+- **golang.org/x/text** - Unicode handling for title casing
 
 ## Development
 

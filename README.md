@@ -26,9 +26,10 @@ Generate databases from JSON schemas with realistic fake data. **10-50x faster**
 
 - 🚀 **Schema-Driven** - Define tables and data in simple JSON format
 - ⚡ **High Performance** - Go core delivers 10-50x speed improvement
-- 💡 **Realistic Data** - 116+ generators covering financial, localization, products, animals, food, and more
-- 🎨 **Custom Patterns** - Template generator for custom data formats (SKUs, IDs, codes)
-- 🗄️ **Multi-Database** - Works with SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, CockroachDB
+- 💡 **Realistic Data** - 116+ generators covering financial, localization, products, animals, food, vehicles, books, and more
+- 🎨 **Custom Patterns** - Template generator for custom data formats (SKUs, IDs, codes, license plates)
+- 🎯 **Interactive Generator** - Built-in schema generator with 10 pre-built templates
+- 🗄️ **Multi-Database** - Works with SQLite, MySQL, PostgreSQL, MariaDB, MS SQL Server, CockroachDB
 - 🎯 **Simple API** - Easy CLI and programmatic usage
 - 🌍 **Cross-Platform** - Linux, macOS, Windows (amd64 & arm64)
 - 📦 **Multi-Ecosystem** - Available on PyPI, npm, and Homebrew
@@ -215,53 +216,95 @@ Create a `schema.json` file defining your database structure:
 }
 ```
 
-## 🎨 Available Generators
+## 🎨 Available Generators (116+)
 
 ### Personal Data
 - `first_name`, `last_name`, `name`
 - `email`, `user_name`, `password`
-- `phone_number`, `ssn`
+- `phone_number`, `ssn`, `ein`
 
-### Address
+### Address & Location
 - `address`, `street_address`
-- `city`, `state`, `country`
+- `city`, `state`, `country`, `country_code`
 - `postcode`, `latitude`, `longitude`
+- `timezone`, `language`, `locale`
 
-### Company
+### Financial & Payment
+- `credit_card`, `credit_card_type`, `credit_card_cvv`, `credit_card_exp`
+- `currency`, `currency_long`, `price`
+- `bitcoin_address`, `bitcoin_private_key`
+- `iban`, `routing_number`
+
+### Company & Job
 - `company`, `company_suffix`
 - `job`, `catch_phrase`
 
-### Internet
-- `url`, `domain_name`
+### Internet & Technology
+- `url`, `domain_name`, `slug`
 - `ipv4`, `ipv6`, `mac_address`
-- `user_agent`, `slug`
+- `user_agent`, `chrome_user_agent`, `firefox_user_agent`, `safari_user_agent`, `opera_user_agent`
+- `app_name`, `app_version`, `app_author`
 
 ### Dates & Times
-- `date`, `date_time`
+- `date`, `date_time`, `timestamp`
 - `past_date`, `future_date`
 - `time`, `unix_time`
+- `year`, `month`, `month_string`, `weekday`
 
-### Text
+### Text & Content
 - `text`, `sentence`, `paragraph`
 - `word`, `words`
+- `quote`, `phrase`, `question`
+- `emoji`, `emoji_description`, `emoji_category`
 
-### Numbers
-- `random_int`, `random_digit`
-- `random_number`, `random_float`
+### Numbers & Ranges
+- `random_int`, `integer` (with min/max range)
+- `random_digit`, `random_number`
+- `random_float`, `float`, `decimal` (with min/max range)
 
-### Special
+### Products & E-commerce
+- `product_name`, `product_category`, `product_description`, `product_feature`
+- `color`, `hex_color`, `safe_color`
+- `price`
+
+### Files & Media
+- `filename`, `file_extension`, `mime_type`
+- `image_url`
+
+### Books & Entertainment
+- `book_title`, `book_author`, `book_genre`
+- `movie_name`, `movie_genre`
+
+### Animals & Nature
+- `animal`, `animal_type`, `pet_name`
+- `cat`, `dog`, `bird`, `farm_animal`
+
+### Food & Drink
+- `fruit`, `vegetable`
+- `breakfast`, `lunch`, `dinner`, `snack`, `dessert`
+- `drink`
+
+### Vehicles & Transportation
+- `car_maker`, `car_model`, `car_type`
+- `car_fuel_type`, `car_transmission_type`
+
+### Special Generators
 - `person` - Complete person object
 - `user` - User credentials object
 - `random_from` - Pick from provided list
 - `uuid` - Generate UUID
+- `template` - Custom patterns with modifiers
 
 ## 🗄️ Supported Databases
 
-| Database   | Driver                 | Connection String Example                    |
-|------------|------------------------|----------------------------------------------|
-| SQLite     | `sqlite`               | `sqlite:///path/to/database.db`              |
-| MySQL      | `mysql+mysqlconnector` | `mysql+mysqlconnector://user:pass@host/db`   |
-| PostgreSQL | `postgresql+psycopg2`  | `postgresql+psycopg2://user:pass@host/db`    |
+| Database      | Driver                 | Connection String Example                    |
+|---------------|------------------------|----------------------------------------------|
+| SQLite        | `sqlite`               | `sqlite:///path/to/database.db`              |
+| MySQL         | `mysql+mysqlconnector` | `mysql+mysqlconnector://user:pass@host/db`   |
+| PostgreSQL    | `postgresql+psycopg2`  | `postgresql+psycopg2://user:pass@host/db`    |
+| MariaDB       | `mysql+mysqlconnector` | `mysql+mysqlconnector://user:pass@host/db`   |
+| MS SQL Server | `mssql+pyodbc`         | `mssql+pyodbc://user:pass@host/db`           |
+| CockroachDB   | `postgresql+psycopg2`  | `postgresql+psycopg2://user:pass@host:26257/db` |
 
 ### SQLite Example
 ```json
@@ -324,6 +367,8 @@ Create custom data formats using the **template generator**:
 {"pattern": "EMP-{{random_int(10000,99999)}}"}         // EMP-45678
 {"pattern": "{{uuid|upper|truncate(8)}}"}               // A1B2C3D4
 {"pattern": "{{city}}, {{state}} {{postcode}}"}         // San Francisco, CA 94102
+{"pattern": "{{car_maker}}-{{car_model|upper}}"}        // Toyota-CAMRY
+{"pattern": "{{country_code}}-{{random_int(100,999)}}"} // US-432
 ```
 
 **Supported Modifiers**: `upper`, `lower`, `title`, `trim`, `truncate(n)`

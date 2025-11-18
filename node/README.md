@@ -11,8 +11,10 @@ High-performance database generator powered by Go. Generate database tables and 
 ## Features
 
 ⚡ **10-50x faster** than pure JavaScript implementations  
-🗄️ **Multi-database support** - SQLite, MySQL, PostgreSQL  
-💡 **50+ data generators** - names, emails, addresses, and more  
+🗄️ **Multi-database support** - SQLite, MySQL, PostgreSQL, MariaDB, MS SQL Server, CockroachDB  
+💡 **116+ data generators** - financial, products, animals, food, vehicles, books, and more  
+🎨 **Template generator** - Custom data patterns with modifiers  
+🎯 **Interactive generator** - Built-in schema generator with 10 pre-built templates  
 🎯 **Simple API** - CLI and programmatic usage  
 🌍 **Cross-platform** - Works on Linux, macOS, and Windows  
 📦 **Zero dependencies** - Includes pre-compiled binaries
@@ -32,6 +34,9 @@ pnpm add fakestack
 ### CLI Usage
 
 ```bash
+# Generate schema interactively
+npx fakestack -g .
+
 # Download example schema
 npx fakestack -d .
 
@@ -73,6 +78,7 @@ if (exitCode === 0) {
 ## 📖 CLI Options
 
 ```
+-g, -generate <file>  Generate schema interactively (use '.' for default filename)
 -c, -create-table     Create database tables from schema
 -p, -populate-data    Populate tables with fake data
 -f, -file <path>      Path to JSON schema file
@@ -123,16 +129,23 @@ if (exitCode === 0) {
 }
 ```
 
-## 🎨 Available Generators
+## 🎨 Available Generators (116+)
 
-- **Personal**: name, first_name, last_name, email, username, password
-- **Address**: address, city, country, street_address, postcode
-- **Company**: company, job, catch_phrase
-- **Internet**: url, domain_name, ipv4, ipv6, mac_address
-- **Dates**: date, date_time, past_date, future_date
-- **Text**: text, sentence, paragraph, word
-- **Numbers**: random_int, random_digit, random_number
-- And many more!
+- **Personal & Identifiers**: name, first_name, last_name, email, username, password, ssn, ein
+- **Financial & Payment**: credit_card, credit_card_type, credit_card_cvv, credit_card_exp, currency, bitcoin_address, iban, routing_number, price
+- **Address & Location**: address, city, country, country_code, street_address, postcode, latitude, longitude, timezone, language, locale
+- **Company & Job**: company, job, catch_phrase
+- **Internet & Technology**: url, domain_name, ipv4, ipv6, mac_address, user_agent, slug, app_name, app_version
+- **Dates & Times**: date, date_time, timestamp, past_date, future_date, time, year, month, weekday
+- **Text & Content**: text, sentence, paragraph, word, quote, phrase, question, emoji
+- **Numbers & Ranges**: random_int, integer (with min/max), random_digit, random_number, float, decimal (with min/max)
+- **Products & E-commerce**: product_name, product_category, product_description, color, hex_color, price
+- **Files & Media**: filename, file_extension, mime_type, image_url
+- **Books & Entertainment**: book_title, book_author, book_genre, movie_name, movie_genre
+- **Animals & Nature**: animal, animal_type, pet_name, cat, dog, bird, farm_animal
+- **Food & Drink**: fruit, vegetable, breakfast, lunch, dinner, snack, dessert, drink
+- **Vehicles**: car_maker, car_model, car_type, car_fuel_type, car_transmission_type
+- **Template Generator**: Create custom patterns with modifiers (upper, lower, title, trim, truncate)
 
 ## 📊 Performance
 
@@ -144,9 +157,12 @@ if (exitCode === 0) {
 
 ## 🗄️ Supported Databases
 
-- SQLite (no additional setup required)
-- MySQL / MariaDB
-- PostgreSQL
+- **SQLite** - No additional setup required
+- **MySQL** - Industry-standard relational database
+- **MariaDB** - MySQL-compatible with enhanced features
+- **PostgreSQL** - Advanced open-source database
+- **MS SQL Server** - Microsoft's enterprise database
+- **CockroachDB** - Distributed SQL database (PostgreSQL-compatible)
 
 ## 🔧 TypeScript Support
 

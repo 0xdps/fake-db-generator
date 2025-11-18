@@ -17,9 +17,11 @@ pip install fakestack
 ## Features
 
 - **Zero Dependencies**: No runtime dependencies, all functionality provided by bundled Go binary
-- **50+ Fake Data Generators**: Built on gofakeit
-- **Multi-Database Support**: SQLite, MySQL, PostgreSQL
-- **Fast**: 10-100x faster than pure Python implementations
+- **116+ Fake Data Generators**: Built on gofakeit (financial, localization, products, animals, food, vehicles, books, and more)
+- **Template Generator**: Create custom data patterns (SKUs, IDs, codes) with modifiers
+- **Interactive Schema Generator**: Built-in generator with 10 pre-built templates
+- **Multi-Database Support**: SQLite, MySQL, PostgreSQL, MariaDB, MS SQL Server, CockroachDB
+- **Fast**: 10-50x faster than pure Python implementations
 - **Cross-Platform**: Works on Linux, macOS, Windows (x64 & ARM64)
 - **Python 3.8+**: Compatible with Python 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
 
@@ -28,6 +30,9 @@ pip install fakestack
 ### Command Line
 
 ```bash
+# Generate schema interactively
+python -m fakestack.runner -g .
+
 # Download example schema
 python -m fakestack.runner -d .
 
@@ -38,7 +43,8 @@ python -m fakestack.runner -c -p -f schema.json
 Or use the installed command:
 
 ```bash
-fakestack -d .
+fakestack -g .              # Interactive schema generator
+fakestack -d .              # Download example
 fakestack -c -p -f schema.json
 ```
 
@@ -81,6 +87,7 @@ fakestack(['-c', '-p', '-f', 'schema.json'])
 
 ## Available Options
 
+- `-g <file>` - Generate schema interactively (use '.' for default filename)
 - `-d <path>` - Download example schema
 - `-c` - Create database tables
 - `-p` - Populate tables with fake data  
@@ -88,7 +95,20 @@ fakestack(['-c', '-p', '-f', 'schema.json'])
 
 ## Available Fake Data Types
 
-See [golang/README.md](../golang/README.md) for complete list of 50+ fake data generators.
+See [golang/README.md](../golang/README.md) for complete list of 116+ fake data generators across 12 categories:
+
+- Personal Data & Identifiers
+- Financial & Payment
+- Address & Location
+- Company & Job
+- Internet & Technology
+- Dates & Times
+- Products & E-commerce
+- Files & Media
+- Books & Entertainment
+- Animals & Nature
+- Food & Drink
+- Vehicles & Transportation
 
 ## Development
 
