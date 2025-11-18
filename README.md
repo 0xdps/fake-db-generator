@@ -26,7 +26,7 @@ Generate databases from JSON schemas with realistic fake data. **10-50x faster**
 
 - 🚀 **Schema-Driven** - Define tables and data in simple JSON format
 - ⚡ **High Performance** - Go core delivers 10-50x speed improvement
-- 💡 **Realistic Data** - 50+ generators for names, emails, addresses, dates, and more
+- 💡 **Realistic Data** - 116+ generators covering financial, localization, products, animals, food, and more
 - 🎨 **Custom Patterns** - Template generator for custom data formats (SKUs, IDs, codes)
 - 🗄️ **Multi-Database** - Works with SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, CockroachDB
 - 🎯 **Simple API** - Easy CLI and programmatic usage

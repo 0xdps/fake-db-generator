@@ -150,6 +150,180 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 	case "uuid":
 		return g.fake.UUID(), nil
 
+	// Financial/Payment
+	case "credit_card":
+		return g.fake.CreditCardNumber(nil), nil
+	case "credit_card_type":
+		return g.fake.CreditCardType(), nil
+	case "credit_card_cvv":
+		return g.fake.CreditCardCvv(), nil
+	case "credit_card_exp":
+		return g.fake.CreditCardExp(), nil
+	case "currency":
+		return g.fake.CurrencyShort(), nil
+	case "currency_long":
+		return g.fake.CurrencyLong(), nil
+	case "bitcoin_address":
+		return g.fake.BitcoinAddress(), nil
+	case "bitcoin_private_key":
+		return g.fake.BitcoinPrivateKey(), nil
+
+	// Time & Timestamps
+	case "timestamp":
+		return g.fake.Date().Unix(), nil
+	case "time":
+		return g.fake.Date().Format("15:04:05"), nil
+	case "year":
+		return g.fake.Year(), nil
+	case "month":
+		return g.fake.Month(), nil
+	case "month_string":
+		return g.fake.MonthString(), nil
+	case "weekday":
+		return g.fake.WeekDay(), nil
+	case "timezone":
+		return g.fake.TimeZone(), nil
+
+	// Localization
+	case "country_code":
+		return g.fake.CountryAbr(), nil
+	case "language":
+		return g.fake.Language(), nil
+	case "language_abbr":
+		return g.fake.LanguageAbbreviation(), nil
+	case "locale":
+		return g.fake.Language() + "_" + g.fake.CountryAbr(), nil
+
+	// Product/E-commerce
+	case "color":
+		return g.fake.Color(), nil
+	case "hex_color":
+		return g.fake.HexColor(), nil
+	case "safe_color":
+		return g.fake.SafeColor(), nil
+	case "product_name":
+		return g.fake.ProductName(), nil
+	case "product_category":
+		return g.fake.ProductCategory(), nil
+	case "product_description":
+		return g.fake.ProductDescription(), nil
+	case "product_feature":
+		return g.fake.ProductFeature(), nil
+	case "price":
+		return g.fake.Price(1.0, 1000.0), nil
+
+	// Files & Media
+	case "filename":
+		return g.fake.Word() + "." + g.fake.FileExtension(), nil
+	case "file_extension":
+		return g.fake.FileExtension(), nil
+	case "mime_type":
+		return g.fake.FileMimeType(), nil
+	case "image_url":
+		return fmt.Sprintf("https://picsum.photos/%d/%d", 400, 300), nil
+
+	// User Agent & Browser
+	case "user_agent":
+		return g.fake.UserAgent(), nil
+	case "chrome_user_agent":
+		return g.fake.ChromeUserAgent(), nil
+	case "firefox_user_agent":
+		return g.fake.FirefoxUserAgent(), nil
+	case "safari_user_agent":
+		return g.fake.SafariUserAgent(), nil
+	case "opera_user_agent":
+		return g.fake.OperaUserAgent(), nil
+
+	// Books & Media
+	case "book_title":
+		return g.fake.BookTitle(), nil
+	case "book_author":
+		return g.fake.BookAuthor(), nil
+	case "book_genre":
+		return g.fake.BookGenre(), nil
+	case "movie_name":
+		return g.fake.MovieName(), nil
+	case "movie_genre":
+		return g.fake.MovieGenre(), nil
+
+	// Animals & Nature
+	case "animal":
+		return g.fake.Animal(), nil
+	case "animal_type":
+		return g.fake.AnimalType(), nil
+	case "pet_name":
+		return g.fake.PetName(), nil
+	case "cat":
+		return g.fake.Cat(), nil
+	case "dog":
+		return g.fake.Dog(), nil
+	case "bird":
+		return g.fake.Bird(), nil
+	case "farm_animal":
+		return g.fake.FarmAnimal(), nil
+
+	// Food
+	case "fruit":
+		return g.fake.Fruit(), nil
+	case "vegetable":
+		return g.fake.Vegetable(), nil
+	case "breakfast":
+		return g.fake.Breakfast(), nil
+	case "lunch":
+		return g.fake.Lunch(), nil
+	case "dinner":
+		return g.fake.Dinner(), nil
+	case "snack":
+		return g.fake.Snack(), nil
+	case "dessert":
+		return g.fake.Dessert(), nil
+	case "drink":
+		return g.fake.Drink(), nil
+
+	// Vehicle/Transportation
+	case "car_maker":
+		return g.fake.CarMaker(), nil
+	case "car_model":
+		return g.fake.CarModel(), nil
+	case "car_type":
+		return g.fake.CarType(), nil
+	case "car_fuel_type":
+		return g.fake.CarFuelType(), nil
+	case "car_transmission_type":
+		return g.fake.CarTransmissionType(), nil
+
+	// Identifiers
+	case "ssn":
+		return g.fake.SSN(), nil
+	case "ein":
+		return g.fake.Cusip(), nil
+	case "iban":
+		return g.fake.AchAccount(), nil
+	case "routing_number":
+		return g.fake.AchRouting(), nil
+
+	// Additional Text Types
+	case "emoji":
+		return g.fake.Emoji(), nil
+	case "emoji_description":
+		return g.fake.EmojiDescription(), nil
+	case "emoji_category":
+		return g.fake.EmojiCategory(), nil
+	case "quote":
+		return g.fake.Quote(), nil
+	case "phrase":
+		return g.fake.Phrase(), nil
+	case "question":
+		return g.fake.Question(), nil
+
+	// App & Software
+	case "app_name":
+		return g.fake.AppName(), nil
+	case "app_version":
+		return g.fake.AppVersion(), nil
+	case "app_author":
+		return g.fake.AppAuthor(), nil
+
 	// Custom generators
 	case "person":
 		return g.generatePerson()

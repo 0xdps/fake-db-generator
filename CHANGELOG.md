@@ -24,10 +24,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic row count suggestions per template
   - Usage: `fakestack -g .` or `fakestack -g my-schema.json`
   - Implementation in `golang/templates.go` for clean code organization
-- **New Generators**: Added `integer`, `float`, and `decimal` generators with min/max range support
-  - `integer` / `random_int` - Generate integers with configurable min/max range
-  - `float` / `decimal` - Generate floating-point numbers with configurable min/max range
-  - Backward compatible with existing `random_int` generator
+- **New Generators**: Added 80+ generators across 12 categories for comprehensive test data generation
+  - **Financial/Payment** (8): `credit_card`, `credit_card_type`, `credit_card_cvv`, `credit_card_exp`, `currency`, `currency_long`, `bitcoin_address`, `bitcoin_private_key`
+  - **Time & Timestamps** (7): `timestamp`, `time`, `year`, `month`, `month_string`, `weekday`, `timezone`
+  - **Localization** (4): `country_code`, `language`, `language_abbr`, `locale`
+  - **Product/E-commerce** (8): `color`, `hex_color`, `safe_color`, `product_name`, `product_category`, `product_description`, `product_feature`, `price`
+  - **Files & Media** (4): `filename`, `file_extension`, `mime_type`, `image_url`
+  - **User Agent & Browser** (5): `user_agent`, `chrome_user_agent`, `firefox_user_agent`, `safari_user_agent`, `opera_user_agent`
+  - **Books & Media** (5): `book_title`, `book_author`, `book_genre`, `movie_name`, `movie_genre`
+  - **Animals & Nature** (7): `animal`, `animal_type`, `pet_name`, `cat`, `dog`, `bird`, `farm_animal`
+  - **Food** (8): `fruit`, `vegetable`, `breakfast`, `lunch`, `dinner`, `snack`, `dessert`, `drink`
+  - **Vehicle/Transportation** (5): `car_maker`, `car_model`, `car_type`, `car_fuel_type`, `car_transmission_type`
+  - **Identifiers** (4): `ssn`, `ein`, `iban`, `routing_number`
+  - **Text Types** (6): `emoji`, `emoji_description`, `emoji_category`, `quote`, `phrase`, `question`
+  - **App & Software** (3): `app_name`, `app_version`, `app_author`
+  - **Range Support**: Added `integer`, `float`, and `decimal` generators with min/max range support
+    - `integer` / `random_int` - Generate integers with configurable min/max range
+    - `float` / `decimal` - Generate floating-point numbers with configurable min/max range
+    - Backward compatible with existing `random_int` generator
+  - Total generators: 116+ covering most common data generation needs
 - **Database Support**: Added support for 3 additional database systems
   - MariaDB - MySQL-compatible database with enhanced features
   - MS SQL Server - Microsoft's enterprise database with IDENTITY syntax support
@@ -55,6 +70,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated `CREATE TABLE` to use `IF OBJECT_ID` syntax
   - Updated `DROP TABLE` to use `IF OBJECT_ID` syntax
   - Fixed sqlcmd path in workflow to `/opt/mssql-tools18/bin/sqlcmd` with `-C` flag
+- **Deprecation Fix**: Replaced deprecated `strings.Title()` with Unicode-compliant `cases.Title()`
+  - Added dependency: `golang.org/x/text v0.31.0`
+  - Fixed deprecation warning in Go 1.24.0
+  - Improved Unicode handling for title casing
 
 ### Technical Details
 - Total supported databases: **6** (SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, CockroachDB)
