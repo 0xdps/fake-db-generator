@@ -322,7 +322,7 @@ jobs:
             <(echo '{
               "dbtype": "mssql",
               "username": "sa",
-              "password": "YourStrong@Passw0rd",
+              "password": "TestPass123!",
               "host": "localhost:1433",
               "database": "testdb"
             }') \
