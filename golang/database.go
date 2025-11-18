@@ -93,7 +93,12 @@ func (db *Database) CreateTables() error {
 // DropTables drops all tables defined in the schema
 func (db *Database) DropTables() error {
 	for _, table := range db.schema.Tables {
-		query := fmt.Sprintf("DROP TABLE IF EXISTS %s", table.Name)
+		var query string
+		if db.driver == "sqlserver" {
+			query = fmt.Sprintf("IF OBJECT_ID('[%s]', 'U') IS NOT NULL DROP TABLE [%s]", table.Name, table.Name)
+		} else {
+			query = fmt.Sprintf("DROP TABLE IF EXISTS %s", table.Name)
+		}
 		if _, err := db.conn.Exec(query); err != nil {
 			return fmt.Errorf("failed to drop table %s: %w", table.Name, err)
 		}
@@ -111,8 +116,14 @@ func (db *Database) createTable(table DbTable) error {
 		columns = append(columns, colDef)
 	}
 
-	query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (\n  %s\n)",
-		table.Name, strings.Join(columns, ",\n  "))
+	var query string
+	if db.driver == "sqlserver" {
+		query = fmt.Sprintf("IF OBJECT_ID('[%s]', 'U') IS NULL CREATE TABLE [%s] (\n  %s\n)",
+			table.Name, table.Name, strings.Join(columns, ",\n  "))
+	} else {
+		query = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (\n  %s\n)",
+			table.Name, strings.Join(columns, ",\n  "))
+	}
 
 	_, err := db.conn.Exec(query)
 	return err
@@ -121,7 +132,11 @@ func (db *Database) createTable(table DbTable) error {
 // buildColumnDefinition builds a SQL column definition
 func (db *Database) buildColumnDefinition(col ParsedTableColumn) string {
 	sqlType := db.getSQLType(col.Type)
-	def := fmt.Sprintf("%s %s", col.Name, sqlType)
+	colName := col.Name
+	if db.driver == "sqlserver" {
+		colName = fmt.Sprintf("[%s]", col.Name)
+	}
+	def := fmt.Sprintf("%s %s", colName, sqlType)
 
 	// Handle options
 	if primary, ok := col.Options["primary_key"].(bool); ok && primary {
@@ -197,7 +212,11 @@ func (db *Database) Insert(tableName string, data map[string]interface{}) error 
 	i := 1
 
 	for col, val := range data {
-		columns = append(columns, col)
+		if db.driver == "sqlserver" {
+			columns = append(columns, fmt.Sprintf("[%s]", col))
+		} else {
+			columns = append(columns, col)
+		}
 		if db.driver == "postgres" {
 			placeholders = append(placeholders, fmt.Sprintf("$%d", i))
 		} else {
@@ -207,8 +226,15 @@ func (db *Database) Insert(tableName string, data map[string]interface{}) error 
 		i++
 	}
 
+	var tableName_quoted string
+	if db.driver == "sqlserver" {
+		tableName_quoted = fmt.Sprintf("[%s]", tableName)
+	} else {
+		tableName_quoted = tableName
+	}
+
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
-		tableName,
+		tableName_quoted,
 		strings.Join(columns, ", "),
 		strings.Join(placeholders, ", "))
 
@@ -219,13 +245,20 @@ func (db *Database) Insert(tableName string, data map[string]interface{}) error 
 // GetRandomValue gets a random value from a column
 func (db *Database) GetRandomValue(tableName, columnName string) (interface{}, error) {
 	var query string
+	tableQuoted := tableName
+	columnQuoted := columnName
+	if db.driver == "sqlserver" {
+		tableQuoted = fmt.Sprintf("[%s]", tableName)
+		columnQuoted = fmt.Sprintf("[%s]", columnName)
+	}
+
 	switch db.driver {
 	case "sqlite3", "postgres":
-		query = fmt.Sprintf("SELECT %s FROM %s ORDER BY RANDOM() LIMIT 1", columnName, tableName)
+		query = fmt.Sprintf("SELECT %s FROM %s ORDER BY RANDOM() LIMIT 1", columnQuoted, tableQuoted)
 	case "mysql":
-		query = fmt.Sprintf("SELECT %s FROM %s ORDER BY RAND() LIMIT 1", columnName, tableName)
+		query = fmt.Sprintf("SELECT %s FROM %s ORDER BY RAND() LIMIT 1", columnQuoted, tableQuoted)
 	case "sqlserver":
-		query = fmt.Sprintf("SELECT TOP 1 %s FROM %s ORDER BY NEWID()", columnName, tableName)
+		query = fmt.Sprintf("SELECT TOP 1 %s FROM %s ORDER BY NEWID()", columnQuoted, tableQuoted)
 	}
 
 	var value interface{}
