@@ -546,3 +546,4 @@ bin/
 .vercel/
 
 PUBLISHING_CHECKLIST.md
+GO_*.md
