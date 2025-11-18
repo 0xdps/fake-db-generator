@@ -49,7 +49,7 @@ func getDriver(dbType DbType) string {
 	switch dbType {
 	case MySQL, MariaDB:
 		return "mysql"
-	case Postgres, CockroachDB:
+	case Postgres, PostgresAlt, CockroachDB:
 		return "postgres"
 	case SQLite:
 		return "sqlite3"
@@ -66,7 +66,7 @@ func buildConnectionString(opts DbOptions) string {
 	case MySQL, MariaDB:
 		return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true",
 			opts.Username, opts.Password, opts.Host, opts.Database)
-	case Postgres, CockroachDB:
+	case Postgres, PostgresAlt, CockroachDB:
 		return fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 			opts.Username, opts.Password, opts.Host, opts.Database)
 	case SQLite:
