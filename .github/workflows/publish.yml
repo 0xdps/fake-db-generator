@@ -490,7 +490,7 @@ jobs:
         mkdir -p tap/Formula
         
         # Copy and update formula
-        cp golang/homebrew/fakestack.rb tap/Formula/fakestack.rb
+        cp golang/Formula/fakestack.rb tap/Formula/fakestack.rb
         
         # Update version
         sed -i "s/version \".*\"/version \"${TAG_VERSION}\"/" tap/Formula/fakestack.rb
