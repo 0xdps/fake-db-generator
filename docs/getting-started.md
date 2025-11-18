@@ -18,7 +18,8 @@ npm install fakestack
 
 ### Homebrew (macOS/Linux)
 ```bash
-brew install 0xdps/fakestack
+brew tap 0xdps/packages
+brew install fakestack
 ```
 
 ### Direct Binary Download

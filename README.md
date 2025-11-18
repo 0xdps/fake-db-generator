@@ -393,7 +393,7 @@ Built with:
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/0xdps/fake-stack/discussions)
 - 📦 **PyPI**: https://pypi.org/project/fakestack/
 - 📦 **npm**: https://www.npmjs.com/package/fakestack
-- 🍺 **Homebrew**: `brew install 0xdps/fakestack`
+- 🍺 **Homebrew**: `brew tap 0xdps/packages && brew install fakestack`
 
 ## 🔖 Changelog
 

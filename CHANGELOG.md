@@ -180,7 +180,8 @@ npm install fakestack
 
 **Homebrew:**
 ```bash
-brew install 0xdps/tap/fakestack
+brew tap 0xdps/packages
+brew install fakestack
 ```
 
 ### Quick Start
