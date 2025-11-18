@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Database Support**: Added support for 3 additional database systems
+  - MariaDB - MySQL-compatible database with enhanced features
+  - MS SQL Server - Microsoft's enterprise database with IDENTITY syntax support
+  - CockroachDB - Distributed SQL database (PostgreSQL-compatible)
+- **Manual Testing Workflow**: Created `.github/workflows/test-databases.yml` for on-demand database testing
+  - Tests all 6 supported databases in parallel
+  - Manual trigger via GitHub Actions UI (`workflow_dispatch`)
+  - Individual checkboxes for selective database testing (all selected by default)
+  - Docker-based testing for MySQL, PostgreSQL, MariaDB, MSSQL, SQLite, CockroachDB
+- **Documentation**: Added comprehensive configuration examples and Docker setup for new databases
+- **Version Selector**: Added version dropdown to documentation (powered by mike)
+- **Uninstall Script**: Created `scripts/uninstall.sh` for removing fakestack from npm, pip, and Homebrew
+
+### Changed
+- **Homebrew Tap**: Renamed from `homebrew-fakestack` to `homebrew-packages` for future tool support
+  - New installation: `brew tap 0xdps/packages && brew install fakestack`
+  - Prepares tap for additional tools beyond fakestack
+- **Database Driver**: Added Microsoft SQL Server driver (`github.com/denisenkom/go-mssqldb`)
+- **Documentation**: Updated all installation instructions to use new tap name
+
+### Technical Details
+- Total supported databases: **6** (SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, CockroachDB)
+- MariaDB uses MySQL driver (drop-in compatible)
+- CockroachDB uses PostgreSQL driver
+- MSSQL implements IDENTITY autoincrement and NEWID() for random selection
+
 ## [1.0.1] - 2025-11-17
 
 ### Added

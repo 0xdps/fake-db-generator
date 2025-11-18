@@ -4,9 +4,34 @@ name: Test Database Support
 on:
   workflow_dispatch:
     inputs:
-      test_all:
-        description: 'Test all databases'
-        required: true
+      test_mysql:
+        description: 'Test MySQL'
+        required: false
+        default: true
+        type: boolean
+      test_mariadb:
+        description: 'Test MariaDB'
+        required: false
+        default: true
+        type: boolean
+      test_postgres:
+        description: 'Test PostgreSQL'
+        required: false
+        default: true
+        type: boolean
+      test_sqlite:
+        description: 'Test SQLite'
+        required: false
+        default: true
+        type: boolean
+      test_mssql:
+        description: 'Test MS SQL Server'
+        required: false
+        default: true
+        type: boolean
+      test_cockroachdb:
+        description: 'Test CockroachDB'
+        required: false
         default: true
         type: boolean
 
@@ -14,7 +39,7 @@ jobs:
   test-mysql:
     name: Test MySQL
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_all == 'true'
+    if: github.event.inputs.test_mysql == 'true'
     
     services:
       mysql:
@@ -94,7 +119,7 @@ jobs:
   test-mariadb:
     name: Test MariaDB
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_all == 'true'
+    if: github.event.inputs.test_mariadb == 'true'
     
     services:
       mariadb:
@@ -174,7 +199,7 @@ jobs:
   test-postgres:
     name: Test PostgreSQL
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_all == 'true'
+    if: github.event.inputs.test_postgres == 'true'
     
     services:
       postgres:
@@ -254,7 +279,7 @@ jobs:
   test-sqlite:
     name: Test SQLite
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_all == 'true'
+    if: github.event.inputs.test_sqlite == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -317,7 +342,7 @@ jobs:
   test-mssql:
     name: Test MS SQL Server
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_all == 'true'
+    if: github.event.inputs.test_mssql == 'true'
     
     services:
       mssql:
@@ -400,9 +425,86 @@ jobs:
           echo "Found $COUNT rows"
           [ "$COUNT" -eq 10 ] && echo "✅ MSSQL test passed"
 
+  test-cockroachdb:
+    name: Test CockroachDB
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_cockroachdb == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Start CockroachDB
+        run: |
+          docker run -d --name cockroach \
+            -p 26257:26257 -p 8080:8080 \
+            cockroachdb/cockroach:latest start-single-node --insecure
+          sleep 10
+      
+      - name: Setup database
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          PGPASSWORD='' psql -h localhost -p 26257 -U root -c "CREATE DATABASE testdb;"
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache-dependency-path: golang/go.sum
+      
+      - name: Build fakestack
+        working-directory: golang
+        run: |
+          CGO_ENABLED=1 go build -o ../bin/fakestack-test
+          chmod +x ../bin/fakestack-test
+      
+      - name: Create test schema
+        run: |
+          cat > test-schema.json << 'EOF'
+          {
+            "database": {
+              "dbtype": "cockroachdb",
+              "username": "root",
+              "password": "",
+              "host": "localhost:26257",
+              "database": "testdb"
+            },
+            "tables": [
+              {
+                "name": "users",
+                "columns": [
+                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
+                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}, "options": {"nullable": false}},
+                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}, "options": {"nullable": false}}
+                ]
+              }
+            ],
+            "populate": [
+              {
+                "name": "users",
+                "count": 10,
+                "fields": [
+                  {"name": "username", "generator": "user_name"},
+                  {"name": "email", "generator": "email"}
+                ]
+              }
+            ]
+          }
+          EOF
+      
+      - name: Test create and populate
+        run: |
+          ./bin/fakestack-test -c -f test-schema.json
+          ./bin/fakestack-test -p -f test-schema.json
+      
+      - name: Verify data
+        run: |
+          COUNT=$(PGPASSWORD='' psql -h localhost -p 26257 -U root testdb -t -c "SELECT COUNT(*) FROM users;" | xargs)
+          echo "Found $COUNT rows"
+          [ "$COUNT" -eq 10 ] && echo "✅ CockroachDB test passed"
+
   summary:
     name: Test Summary
-    needs: [test-mysql, test-mariadb, test-postgres, test-sqlite, test-mssql]
+    needs: [test-mysql, test-mariadb, test-postgres, test-sqlite, test-mssql, test-cockroachdb]
     runs-on: ubuntu-latest
     if: always()
     
@@ -411,8 +513,10 @@ jobs:
         run: |
           echo "🎯 Database Testing Complete"
           echo "=============================="
-          echo "MySQL: ${{ needs.test-mysql.result }}"
-          echo "MariaDB: ${{ needs.test-mariadb.result }}"
-          echo "PostgreSQL: ${{ needs.test-postgres.result }}"
-          echo "SQLite: ${{ needs.test-sqlite.result }}"
-          echo "MSSQL: ${{ needs.test-mssql.result }}"
+          echo "Selected databases:"
+          echo "  MySQL: ${{ github.event.inputs.test_mysql == 'true' && needs.test-mysql.result || 'skipped' }}"
+          echo "  MariaDB: ${{ github.event.inputs.test_mariadb == 'true' && needs.test-mariadb.result || 'skipped' }}"
+          echo "  PostgreSQL: ${{ github.event.inputs.test_postgres == 'true' && needs.test-postgres.result || 'skipped' }}"
+          echo "  SQLite: ${{ github.event.inputs.test_sqlite == 'true' && needs.test-sqlite.result || 'skipped' }}"
+          echo "  MSSQL: ${{ github.event.inputs.test_mssql == 'true' && needs.test-mssql.result || 'skipped' }}"
+          echo "  CockroachDB: ${{ github.event.inputs.test_cockroachdb == 'true' && needs.test-cockroachdb.result || 'skipped' }}"
