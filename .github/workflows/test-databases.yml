@@ -91,8 +91,7 @@ jobs:
       
       - name: Test create and populate
         run: |
-          ./bin/fakestack-test -c -f test-schema.json
-          ./bin/fakestack-test -p -f test-schema.json
+          ./bin/fakestack-test -c -p -f test-schema.json
       
       - name: Verify data
         run: |
@@ -156,8 +155,7 @@ jobs:
       
       - name: Test create and populate
         run: |
-          ./bin/fakestack-test -c -f test-schema.json
-          ./bin/fakestack-test -p -f test-schema.json
+          ./bin/fakestack-test -c -p -f test-schema.json
       
       - name: Verify data
         run: |
@@ -221,8 +219,7 @@ jobs:
       
       - name: Test create and populate
         run: |
-          ./bin/fakestack-test -c -f test-schema.json
-          ./bin/fakestack-test -p -f test-schema.json
+          ./bin/fakestack-test -c -p -f test-schema.json
       
       - name: Verify data
         run: |
@@ -269,8 +266,7 @@ jobs:
       
       - name: Test create and populate
         run: |
-          ./bin/fakestack-test -c -f test-schema.json
-          ./bin/fakestack-test -p -f test-schema.json
+          ./bin/fakestack-test -c -p -f test-schema.json
       
       - name: Verify data
         run: |
@@ -339,8 +335,7 @@ jobs:
       
       - name: Test create and populate
         run: |
-          ./bin/fakestack-test -c -f test-schema.json
-          ./bin/fakestack-test -p -f test-schema.json
+          ./bin/fakestack-test -c -p -f test-schema.json
       
       - name: Verify data
         run: |
@@ -403,8 +398,7 @@ jobs:
       
       - name: Test create and populate
         run: |
-          ./bin/fakestack-test -c -f test-schema.json
-          ./bin/fakestack-test -p -f test-schema.json
+          ./bin/fakestack-test -c -p -f test-schema.json
       
       - name: Verify data
         run: |

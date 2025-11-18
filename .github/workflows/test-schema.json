@@ -53,7 +53,7 @@
         {"name": "timezone", "type": {"name": "string", "args": {"length": 50}}},
         {"name": "country_code", "type": {"name": "string", "args": {"length": 2}}},
         {"name": "language", "type": {"name": "string", "args": {"length": 50}}},
-        {"name": "locale", "type": {"name": "string", "args": {"length": 10}}},
+        {"name": "locale", "type": {"name": "string", "args": {"length": 20}}},
         {"name": "color", "type": {"name": "string", "args": {"length": 30}}},
         {"name": "hex_color", "type": {"name": "string", "args": {"length": 7}}},
         {"name": "product_name", "type": {"name": "string", "args": {"length": 100}}},
