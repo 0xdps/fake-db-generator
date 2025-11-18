@@ -1,7 +1,7 @@
 class Fakestack < Formula
   desc "High-performance database generator with realistic fake data"
   homepage "https://github.com/0xdps/fake-stack"
-  version "2.1.0"
+  version "1.1.0"
   license "MIT"
 
   on_macos do
