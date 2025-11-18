@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Template Generator**: Custom generator for creating data patterns using templates
+  - Syntax: `{{generator|modifier1|modifier2}}`
+  - Supports all built-in generators (name, email, word, uuid, random_int, etc.)
+  - Modifiers: `upper`, `lower`, `title`, `trim`, `truncate(n)`
+  - Example: `"{{word|upper|truncate(3)}}-{{random_int(1000,9999)}}"` → `PRD-4821`
+  - Perfect for SKUs, employee IDs, license plates, order numbers
+  - See `docs/TEMPLATE_EXAMPLES.md` for comprehensive examples
+  - Enables custom data formats without writing code
 - **Interactive Schema Generator**: New `-g` / `--generate` CLI flag for creating schemas
   - Built directly into fakestack CLI (no separate script needed)
   - 10 pre-built templates (Users, Employees, Products, Orders, Customers, Blog Posts, Inventory, Transactions, Students, Tasks)
