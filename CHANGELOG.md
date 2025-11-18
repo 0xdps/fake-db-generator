@@ -7,6 +7,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Template Generator**: Custom generator for creating data patterns using templates
+  - Syntax: `{{generator|modifier1|modifier2}}`
+  - Supports all built-in generators (name, email, word, uuid, random_int, etc.)
+  - Modifiers: `upper`, `lower`, `title`, `trim`, `truncate(n)`
+  - Example: `"{{word|upper|truncate(3)}}-{{random_int(1000,9999)}}"` → `PRD-4821`
+  - Perfect for SKUs, employee IDs, license plates, order numbers
+  - See `docs/TEMPLATE_EXAMPLES.md` for comprehensive examples
+  - Enables custom data formats without writing code
+- **Interactive Schema Generator**: New `-g` / `--generate` CLI flag for creating schemas
+  - Built directly into fakestack CLI (no separate script needed)
+  - 10 pre-built templates (Users, Employees, Products, Orders, Customers, Blog Posts, Inventory, Transactions, Students, Tasks)
+  - Support for all 6 database types
+  - Customizable database credentials and output filename
+  - Automatic row count suggestions per template
+  - Usage: `fakestack -g .` or `fakestack -g my-schema.json`
+  - Implementation in `golang/templates.go` for clean code organization
+- **New Generators**: Added 80+ generators across 12 categories for comprehensive test data generation
+  - **Financial/Payment** (8): `credit_card`, `credit_card_type`, `credit_card_cvv`, `credit_card_exp`, `currency`, `currency_long`, `bitcoin_address`, `bitcoin_private_key`
+  - **Time & Timestamps** (7): `timestamp`, `time`, `year`, `month`, `month_string`, `weekday`, `timezone`
+  - **Localization** (4): `country_code`, `language`, `language_abbr`, `locale`
+  - **Product/E-commerce** (8): `color`, `hex_color`, `safe_color`, `product_name`, `product_category`, `product_description`, `product_feature`, `price`
+  - **Files & Media** (4): `filename`, `file_extension`, `mime_type`, `image_url`
+  - **User Agent & Browser** (5): `user_agent`, `chrome_user_agent`, `firefox_user_agent`, `safari_user_agent`, `opera_user_agent`
+  - **Books & Media** (5): `book_title`, `book_author`, `book_genre`, `movie_name`, `movie_genre`
+  - **Animals & Nature** (7): `animal`, `animal_type`, `pet_name`, `cat`, `dog`, `bird`, `farm_animal`
+  - **Food** (8): `fruit`, `vegetable`, `breakfast`, `lunch`, `dinner`, `snack`, `dessert`, `drink`
+  - **Vehicle/Transportation** (5): `car_maker`, `car_model`, `car_type`, `car_fuel_type`, `car_transmission_type`
+  - **Identifiers** (4): `ssn`, `ein`, `iban`, `routing_number`
+  - **Text Types** (6): `emoji`, `emoji_description`, `emoji_category`, `quote`, `phrase`, `question`
+  - **App & Software** (3): `app_name`, `app_version`, `app_author`
+  - **Range Support**: Added `integer`, `float`, and `decimal` generators with min/max range support
+    - `integer` / `random_int` - Generate integers with configurable min/max range
+    - `float` / `decimal` - Generate floating-point numbers with configurable min/max range
+    - Backward compatible with existing `random_int` generator
+  - Total generators: 116+ covering most common data generation needs
+- **Database Support**: Added support for 3 additional database systems
+  - MariaDB - MySQL-compatible database with enhanced features
+  - MS SQL Server - Microsoft's enterprise database with IDENTITY syntax support
+  - CockroachDB - Distributed SQL database (PostgreSQL-compatible)
+- **Manual Testing Workflow**: Created `.github/workflows/test-databases.yml` for on-demand database testing
+  - Tests all 6 supported databases in parallel
+  - Manual trigger via GitHub Actions UI (`workflow_dispatch`)
+  - Individual checkboxes for selective database testing (all selected by default)
+  - Docker-based testing for MySQL, PostgreSQL, MariaDB, MSSQL, SQLite, CockroachDB
+- **Centralized Test Schema**: Created `.github/workflows/comprehensive-test-schema.json`
+  - Single source of truth for all database integration tests
+  - 84 columns covering all 116+ generators (83 fields + 1 auto-increment ID)
+  - Automatic field count validation to prevent missing generators
+  - Schema merging with database-specific configuration using `jq`
+  - Reduced test workflow from 1,477 to 432 lines (71% reduction)
+  - Ensures consistency across all 6 database tests
+  - See `.github/workflows/README.md` for documentation
+- **Documentation**: Added comprehensive configuration examples and Docker setup for new databases
+- **Version Selector**: Added version dropdown to documentation (powered by mike)
+- **Uninstall Script**: Created `scripts/uninstall.sh` for removing fakestack from npm, pip, and Homebrew
+
+### Changed
+- **Homebrew Tap**: Renamed from `homebrew-fakestack` to `homebrew-packages` for future tool support
+  - New installation: `brew tap 0xdps/packages && brew install fakestack`
+  - Prepares tap for additional tools beyond fakestack
+- **Database Driver**: Added Microsoft SQL Server driver (`github.com/denisenkom/go-mssqldb`)
+- **Documentation**: Updated all installation instructions to use new tap name
+
+### Fixed
+- **MSSQL Compatibility**: Fixed SQL syntax issues for MS SQL Server
+  - Added square brackets `[table]` and `[column]` around identifiers
+  - Changed placeholders from `?` to `@p1, @p2, @p3` format
+  - Updated `CREATE TABLE` to use `IF OBJECT_ID` syntax
+  - Updated `DROP TABLE` to use `IF OBJECT_ID` syntax
+  - Fixed sqlcmd path in workflow to `/opt/mssql-tools18/bin/sqlcmd` with `-C` flag
+- **Deprecation Fix**: Replaced deprecated `strings.Title()` with Unicode-compliant `cases.Title()`
+  - Added dependency: `golang.org/x/text v0.31.0`
+  - Fixed deprecation warning in Go 1.24.0
+  - Improved Unicode handling for title casing
+
+### Technical Details
+- Total supported databases: **6** (SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, CockroachDB)
+- MariaDB uses MySQL driver (drop-in compatible)
+- CockroachDB uses PostgreSQL driver
+- MSSQL implements IDENTITY autoincrement and NEWID() for random selection
+
 ## [1.0.1] - 2025-11-17
 
 ### Added
@@ -180,7 +262,8 @@ npm install fakestack
 
 **Homebrew:**
 ```bash
-brew install 0xdps/tap/fakestack
+brew tap 0xdps/packages
+brew install fakestack
 ```
 
 ### Quick Start

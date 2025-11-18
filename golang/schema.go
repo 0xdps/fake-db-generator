@@ -10,9 +10,12 @@ import (
 type DbType string
 
 const (
-	MySQL    DbType = "mysql"
-	Postgres DbType = "psql"
-	SQLite   DbType = "sqlite"
+	MySQL       DbType = "mysql"
+	Postgres    DbType = "psql"
+	SQLite      DbType = "sqlite"
+	MSSQL       DbType = "mssql"
+	MariaDB     DbType = "mariadb"
+	CockroachDB DbType = "cockroachdb"
 )
 
 // DbOptions represents database connection configuration

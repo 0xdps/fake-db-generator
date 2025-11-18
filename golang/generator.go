@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/brianvoe/gofakeit/v7"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // Generator handles fake data generation
@@ -109,7 +111,7 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 		return g.fake.Word(), nil
 
 	// Numbers
-	case "random_int":
+	case "integer", "random_int":
 		min, max := 0, 100
 		if argsMap, ok := args.(map[string]interface{}); ok {
 			if minVal, ok := argsMap["min"].(float64); ok {
@@ -120,6 +122,17 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 			}
 		}
 		return g.fake.IntRange(min, max), nil
+	case "float", "decimal":
+		min, max := 0.0, 100.0
+		if argsMap, ok := args.(map[string]interface{}); ok {
+			if minVal, ok := argsMap["min"].(float64); ok {
+				min = minVal
+			}
+			if maxVal, ok := argsMap["max"].(float64); ok {
+				max = maxVal
+			}
+		}
+		return g.fake.Float64Range(min, max), nil
 	case "random_digit":
 		return g.fake.Digit(), nil
 	case "random_number":
@@ -137,6 +150,180 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 	case "uuid":
 		return g.fake.UUID(), nil
 
+	// Financial/Payment
+	case "credit_card":
+		return g.fake.CreditCardNumber(nil), nil
+	case "credit_card_type":
+		return g.fake.CreditCardType(), nil
+	case "credit_card_cvv":
+		return g.fake.CreditCardCvv(), nil
+	case "credit_card_exp":
+		return g.fake.CreditCardExp(), nil
+	case "currency":
+		return g.fake.CurrencyShort(), nil
+	case "currency_long":
+		return g.fake.CurrencyLong(), nil
+	case "bitcoin_address":
+		return g.fake.BitcoinAddress(), nil
+	case "bitcoin_private_key":
+		return g.fake.BitcoinPrivateKey(), nil
+
+	// Time & Timestamps
+	case "timestamp":
+		return g.fake.Date().Unix(), nil
+	case "time":
+		return g.fake.Date().Format("15:04:05"), nil
+	case "year":
+		return g.fake.Year(), nil
+	case "month":
+		return g.fake.Month(), nil
+	case "month_string":
+		return g.fake.MonthString(), nil
+	case "weekday":
+		return g.fake.WeekDay(), nil
+	case "timezone":
+		return g.fake.TimeZone(), nil
+
+	// Localization
+	case "country_code":
+		return g.fake.CountryAbr(), nil
+	case "language":
+		return g.fake.Language(), nil
+	case "language_abbr":
+		return g.fake.LanguageAbbreviation(), nil
+	case "locale":
+		return g.fake.Language() + "_" + g.fake.CountryAbr(), nil
+
+	// Product/E-commerce
+	case "color":
+		return g.fake.Color(), nil
+	case "hex_color":
+		return g.fake.HexColor(), nil
+	case "safe_color":
+		return g.fake.SafeColor(), nil
+	case "product_name":
+		return g.fake.ProductName(), nil
+	case "product_category":
+		return g.fake.ProductCategory(), nil
+	case "product_description":
+		return g.fake.ProductDescription(), nil
+	case "product_feature":
+		return g.fake.ProductFeature(), nil
+	case "price":
+		return g.fake.Price(1.0, 1000.0), nil
+
+	// Files & Media
+	case "filename":
+		return g.fake.Word() + "." + g.fake.FileExtension(), nil
+	case "file_extension":
+		return g.fake.FileExtension(), nil
+	case "mime_type":
+		return g.fake.FileMimeType(), nil
+	case "image_url":
+		return fmt.Sprintf("https://picsum.photos/%d/%d", 400, 300), nil
+
+	// User Agent & Browser
+	case "user_agent":
+		return g.fake.UserAgent(), nil
+	case "chrome_user_agent":
+		return g.fake.ChromeUserAgent(), nil
+	case "firefox_user_agent":
+		return g.fake.FirefoxUserAgent(), nil
+	case "safari_user_agent":
+		return g.fake.SafariUserAgent(), nil
+	case "opera_user_agent":
+		return g.fake.OperaUserAgent(), nil
+
+	// Books & Media
+	case "book_title":
+		return g.fake.BookTitle(), nil
+	case "book_author":
+		return g.fake.BookAuthor(), nil
+	case "book_genre":
+		return g.fake.BookGenre(), nil
+	case "movie_name":
+		return g.fake.MovieName(), nil
+	case "movie_genre":
+		return g.fake.MovieGenre(), nil
+
+	// Animals & Nature
+	case "animal":
+		return g.fake.Animal(), nil
+	case "animal_type":
+		return g.fake.AnimalType(), nil
+	case "pet_name":
+		return g.fake.PetName(), nil
+	case "cat":
+		return g.fake.Cat(), nil
+	case "dog":
+		return g.fake.Dog(), nil
+	case "bird":
+		return g.fake.Bird(), nil
+	case "farm_animal":
+		return g.fake.FarmAnimal(), nil
+
+	// Food
+	case "fruit":
+		return g.fake.Fruit(), nil
+	case "vegetable":
+		return g.fake.Vegetable(), nil
+	case "breakfast":
+		return g.fake.Breakfast(), nil
+	case "lunch":
+		return g.fake.Lunch(), nil
+	case "dinner":
+		return g.fake.Dinner(), nil
+	case "snack":
+		return g.fake.Snack(), nil
+	case "dessert":
+		return g.fake.Dessert(), nil
+	case "drink":
+		return g.fake.Drink(), nil
+
+	// Vehicle/Transportation
+	case "car_maker":
+		return g.fake.CarMaker(), nil
+	case "car_model":
+		return g.fake.CarModel(), nil
+	case "car_type":
+		return g.fake.CarType(), nil
+	case "car_fuel_type":
+		return g.fake.CarFuelType(), nil
+	case "car_transmission_type":
+		return g.fake.CarTransmissionType(), nil
+
+	// Identifiers
+	case "ssn":
+		return g.fake.SSN(), nil
+	case "ein":
+		return g.fake.Cusip(), nil
+	case "iban":
+		return g.fake.AchAccount(), nil
+	case "routing_number":
+		return g.fake.AchRouting(), nil
+
+	// Additional Text Types
+	case "emoji":
+		return g.fake.Emoji(), nil
+	case "emoji_description":
+		return g.fake.EmojiDescription(), nil
+	case "emoji_category":
+		return g.fake.EmojiCategory(), nil
+	case "quote":
+		return g.fake.Quote(), nil
+	case "phrase":
+		return g.fake.Phrase(), nil
+	case "question":
+		return g.fake.Question(), nil
+
+	// App & Software
+	case "app_name":
+		return g.fake.AppName(), nil
+	case "app_version":
+		return g.fake.AppVersion(), nil
+	case "app_author":
+		return g.fake.AppAuthor(), nil
+
 	// Custom generators
 	case "person":
 		return g.generatePerson()
@@ -148,6 +335,8 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 		return g.uniqueItem(field.Name, args)
 	case "db_random_item":
 		return g.dbRandomItem(args)
+	case "template":
+		return g.generateFromTemplate(args, commons)
 
 	default:
 		return nil, fmt.Errorf("unknown generator: %s", generator)
@@ -277,4 +466,200 @@ func (g *Generator) dbRandomItem(args interface{}) (interface{}, error) {
 // ClearUniques clears the unique value cache
 func (g *Generator) ClearUniques() {
 	g.uniques = make(map[string]map[interface{}]bool)
+}
+
+// generateFromTemplate generates value from a template pattern
+func (g *Generator) generateFromTemplate(args interface{}, commons map[string]interface{}) (interface{}, error) {
+	argsMap, ok := args.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("template generator requires args object with 'pattern' field")
+	}
+
+	pattern, ok := argsMap["pattern"].(string)
+	if !ok {
+		return nil, fmt.Errorf("template generator requires 'pattern' string")
+	}
+
+	return g.parseTemplate(pattern, commons)
+}
+
+// parseTemplate parses and executes template pattern
+func (g *Generator) parseTemplate(pattern string, commons map[string]interface{}) (string, error) {
+	result := pattern
+	
+	// Find all {{...}} placeholders
+	for {
+		start := strings.Index(result, "{{")
+		if start == -1 {
+			break
+		}
+		
+		end := strings.Index(result[start:], "}}")
+		if end == -1{
+			return "", fmt.Errorf("unclosed template placeholder in: %s", pattern)
+		}
+		end += start
+		
+		// Extract placeholder content
+		placeholder := result[start+2 : end]
+		
+		// Parse placeholder: generator|modifier1|modifier2
+		parts := strings.Split(placeholder, "|")
+		generatorExpr := strings.TrimSpace(parts[0])
+		modifiers := parts[1:]
+		
+		// Generate value
+		value, err := g.executeTemplateGenerator(generatorExpr, commons)
+		if err != nil {
+			return "", fmt.Errorf("failed to execute generator '%s': %w", generatorExpr, err)
+		}
+		
+		// Apply modifiers
+		valueStr := fmt.Sprintf("%v", value)
+		for _, modifier := range modifiers {
+			valueStr = g.applyModifier(valueStr, strings.TrimSpace(modifier))
+		}
+		
+		// Replace placeholder with generated value
+		result = result[:start] + valueStr + result[end+2:]
+	}
+	
+	return result, nil
+}
+
+// executeTemplateGenerator executes a generator expression
+func (g *Generator) executeTemplateGenerator(expr string, commons map[string]interface{}) (interface{}, error) {
+	// Parse generator name and arguments
+	// Format: generator_name or generator_name(arg1,arg2)
+	
+	parenIndex := strings.Index(expr, "(")
+	if parenIndex == -1 {
+		// No arguments, simple generator
+		return g.executeSimpleGenerator(expr)
+	}
+	
+	// Has arguments
+	generatorName := strings.TrimSpace(expr[:parenIndex])
+	argsStr := expr[parenIndex+1:]
+	
+	// Remove closing parenthesis
+	if !strings.HasSuffix(argsStr, ")") {
+		return nil, fmt.Errorf("missing closing parenthesis in: %s", expr)
+	}
+	argsStr = argsStr[:len(argsStr)-1]
+	
+	// Parse arguments
+	args := g.parseTemplateArgs(argsStr)
+	
+	return g.executeGeneratorWithArgs(generatorName, args)
+}
+
+// executeSimpleGenerator executes a generator without arguments
+func (g *Generator) executeSimpleGenerator(name string) (interface{}, error) {
+	switch name {
+	case "name":
+		return g.fake.Name(), nil
+	case "first_name":
+		return g.fake.FirstName(), nil
+	case "last_name":
+		return g.fake.LastName(), nil
+	case "user_name", "username":
+		return g.fake.Username(), nil
+	case "email":
+		return g.fake.Email(), nil
+	case "word":
+		return g.fake.Word(), nil
+	case "sentence":
+		return g.fake.Sentence(10), nil
+	case "city":
+		return g.fake.Address().City, nil
+	case "state":
+		return g.fake.Address().State, nil
+	case "country":
+		return g.fake.Address().Country, nil
+	case "postcode", "zip_code":
+		return g.fake.Address().Zip, nil
+	case "company":
+		return g.fake.Company(), nil
+	case "uuid":
+		return g.fake.UUID(), nil
+	case "phone":
+		return g.fake.Phone(), nil
+	case "date":
+		return g.fake.Date(), nil
+	default:
+		return nil, fmt.Errorf("unknown generator: %s", name)
+	}
+}
+
+// executeGeneratorWithArgs executes a generator with arguments
+func (g *Generator) executeGeneratorWithArgs(name string, args []string) (interface{}, error) {
+	switch name {
+	case "random_int":
+		if len(args) != 2 {
+			return nil, fmt.Errorf("random_int requires 2 arguments: min, max")
+		}
+		min, max := 0, 100
+		fmt.Sscanf(args[0], "%d", &min)
+		fmt.Sscanf(args[1], "%d", &max)
+		return g.fake.IntRange(min, max), nil
+	case "truncate":
+		// Special case: handled as modifier
+		return nil, fmt.Errorf("truncate should be used as modifier, not generator")
+	default:
+		return g.executeSimpleGenerator(name)
+	}
+}
+
+// parseTemplateArgs parses comma-separated arguments
+func (g *Generator) parseTemplateArgs(argsStr string) []string {
+	if argsStr == "" {
+		return []string{}
+	}
+	
+	parts := strings.Split(argsStr, ",")
+	args := make([]string, len(parts))
+	for i, part := range parts {
+		args[i] = strings.TrimSpace(part)
+	}
+	return args
+}
+
+// applyModifier applies a modifier to a string value
+func (g *Generator) applyModifier(value, modifier string) string {
+	// Check if modifier has arguments: modifier(arg)
+	parenIndex := strings.Index(modifier, "(")
+	if parenIndex != -1 {
+		modName := modifier[:parenIndex]
+		argStr := modifier[parenIndex+1 : len(modifier)-1]
+		
+		switch modName {
+		case "truncate":
+			var length int
+			fmt.Sscanf(argStr, "%d", &length)
+			if length > 0 && len(value) > length {
+				return value[:length]
+			}
+			return value
+		case "format":
+			// Date formatting - simplified
+			return value
+		}
+		return value
+	}
+	
+	// Simple modifiers
+	switch modifier {
+	case "upper":
+		return strings.ToUpper(value)
+	case "lower":
+		return strings.ToLower(value)
+	case "title":
+		caser := cases.Title(language.English)
+		return caser.String(strings.ToLower(value))
+	case "trim":
+		return strings.TrimSpace(value)
+	default:
+		return value
+	}
 }

@@ -3,6 +3,8 @@ name: Build & Test
 on:
   push:
     branches: [ trunk, develop ]
+    tags:
+      - 'v*'
     paths-ignore:
       - '**.md'
       - 'docs/**'

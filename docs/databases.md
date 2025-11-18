@@ -1,6 +1,13 @@
 # Database Support
 
-Fakestack supports three major database systems with native drivers and optimized connections.
+Fakestack supports **6 major database systems** with native drivers and optimized connections:
+
+- **SQLite** - Lightweight, file-based database
+- **MySQL** - Popular open-source relational database
+- **PostgreSQL** - Advanced open-source relational database
+- **MariaDB** - MySQL-compatible database with enhanced features
+- **MS SQL Server** - Microsoft's enterprise database system
+- **CockroachDB** - Distributed SQL database (PostgreSQL-compatible)
 
 ## SQLite
 
@@ -431,6 +438,196 @@ mysql+mysqlconnector://username:password@host:port/database
 ```
 postgresql+psycopg2://username:password@host:port/database
 ```
+
+## MariaDB
+
+### Overview
+
+MariaDB is a MySQL-compatible database with enhanced performance, security features, and additional storage engines.
+
+**Pros:**
+- Drop-in MySQL replacement
+- Better performance than MySQL in many workloads
+- More storage engines (Aria, ColumnStore, etc.)
+- Active open-source development
+
+**Cons:**
+- Some MySQL features not available
+- Less widely adopted than MySQL
+
+### Configuration
+
+```json
+{
+  "database": {
+    "dbtype": "mariadb",
+    "username": "root",
+    "password": "yourpassword",
+    "host": "localhost:3306",
+    "database": "testdb"
+  }
+}
+```
+
+### Connection Options
+
+| Option | Required | Default | Description |
+|--------|----------|---------|-------------|
+| `dbtype` | Yes | - | Must be `"mariadb"` |
+| `username` | Yes | - | Database user |
+| `password` | Yes | - | User password |
+| `host` | Yes | - | Host and port (e.g., `localhost:3306`) |
+| `database` | Yes | - | Database name |
+
+### Usage Example
+
+```bash
+# Create and populate
+fakestack -c -p -f schema.json
+```
+
+**Schema example:**
+```json
+{
+  "database": {
+    "dbtype": "mariadb",
+    "username": "root",
+    "password": "password",
+    "host": "localhost:3306",
+    "database": "mydb"
+  },
+  "tables": [...],
+  "populate": [...]
+}
+```
+
+## MS SQL Server
+
+### Overview
+
+Microsoft SQL Server is an enterprise-grade relational database management system with advanced analytics and integration capabilities.
+
+**Pros:**
+- Enterprise features and support
+- Excellent Windows integration
+- Advanced analytics and BI tools
+- Strong security features
+
+**Cons:**
+- Primarily Windows-focused (Linux support improving)
+- Licensing costs for production
+- More resource-intensive
+
+### Configuration
+
+```json
+{
+  "database": {
+    "dbtype": "mssql",
+    "username": "sa",
+    "password": "YourPassword123!",
+    "host": "localhost:1433",
+    "database": "testdb"
+  }
+}
+```
+
+### Connection Options
+
+| Option | Required | Default | Description |
+|--------|----------|---------|-------------|
+| `dbtype` | Yes | - | Must be `"mssql"` |
+| `username` | Yes | - | Database user (typically `sa`) |
+| `password` | Yes | - | Strong password required |
+| `host` | Yes | - | Host and port (e.g., `localhost:1433`) |
+| `database` | Yes | - | Database name |
+
+### Docker Setup
+
+```bash
+docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourPassword123!' \
+  -p 1433:1433 --name mssql \
+  mcr.microsoft.com/mssql/server:2022-latest
+```
+
+### Usage Example
+
+```bash
+fakestack -c -p -f mssql-schema.json
+```
+
+### Special Considerations
+
+- **Password requirements**: Must be strong (uppercase, lowercase, numbers, special chars)
+- **IDENTITY columns**: Use `autoincrement: true` for auto-incrementing primary keys
+- **Connection timeout**: May need longer timeout for first connection
+
+## CockroachDB
+
+### Overview
+
+CockroachDB is a distributed SQL database that is PostgreSQL-compatible and designed for cloud-native applications.
+
+**Pros:**
+- Horizontal scalability
+- Built-in replication and consistency
+- PostgreSQL wire protocol compatibility
+- Resilient to node failures
+
+**Cons:**
+- More complex setup than traditional databases
+- Different performance characteristics
+- Some PostgreSQL features not supported
+
+### Configuration
+
+```json
+{
+  "database": {
+    "dbtype": "cockroachdb",
+    "username": "root",
+    "password": "",
+    "host": "localhost:26257",
+    "database": "testdb"
+  }
+}
+```
+
+### Connection Options
+
+| Option | Required | Default | Description |
+|--------|----------|---------|-------------|
+| `dbtype` | Yes | - | Must be `"cockroachdb"` |
+| `username` | Yes | - | Database user (default: `root`) |
+| `password` | No | `""` | Password (empty for insecure mode) |
+| `host` | Yes | - | Host and port (default: `26257`) |
+| `database` | Yes | - | Database name |
+
+### Docker Setup
+
+```bash
+# Start single-node cluster (insecure for testing)
+docker run -d -p 26257:26257 -p 8080:8080 \
+  --name cockroach \
+  cockroachdb/cockroach:latest start-single-node --insecure
+
+# Create database
+docker exec -it cockroach ./cockroach sql --insecure \
+  --execute="CREATE DATABASE testdb;"
+```
+
+### Usage Example
+
+```bash
+fakestack -c -p -f cockroachdb-schema.json
+```
+
+### Special Considerations
+
+- Uses PostgreSQL driver internally
+- Default port is `26257` (not `5432`)
+- Supports most PostgreSQL SQL syntax
+- Better suited for distributed deployments
 
 ## Troubleshooting
 

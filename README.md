@@ -26,8 +26,9 @@ Generate databases from JSON schemas with realistic fake data. **10-50x faster**
 
 - 🚀 **Schema-Driven** - Define tables and data in simple JSON format
 - ⚡ **High Performance** - Go core delivers 10-50x speed improvement
-- 💡 **Realistic Data** - 50+ generators for names, emails, addresses, dates, and more
-- 🗄️ **Multi-Database** - Works with SQLite, MySQL, and PostgreSQL
+- 💡 **Realistic Data** - 116+ generators covering financial, localization, products, animals, food, and more
+- 🎨 **Custom Patterns** - Template generator for custom data formats (SKUs, IDs, codes)
+- 🗄️ **Multi-Database** - Works with SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, CockroachDB
 - 🎯 **Simple API** - Easy CLI and programmatic usage
 - 🌍 **Cross-Platform** - Linux, macOS, Windows (amd64 & arm64)
 - 📦 **Multi-Ecosystem** - Available on PyPI, npm, and Homebrew
@@ -62,13 +63,33 @@ Pre-built binaries available on [GitHub Releases](https://github.com/0xdps/fake-
 
 ## 🚀 Quick Start
 
-### 1. Download Example Schema
+### 1. Generate a Schema (Interactive)
+
+Use the built-in interactive generator:
+
+```bash
+fakestack -g .
+# or specify output filename
+fakestack -g my-schema.json
+```
+
+Choose from 10 pre-built templates:
+- **Users** - Basic user management
+- **Employees** - Employee records with departments
+- **Products** - E-commerce products
+- **Orders** - Order management system
+- **Customers** - Customer database
+- **Blog Posts** - Content management
+- **Inventory** - Stock management
+- **Transactions** - Financial records
+- **Students** - Educational records
+- **Tasks** - Task management
+
+Or download a basic example:
 
 ```bash
 fakestack -d .
 ```
-
-This creates a `schema.json` file in the current directory.
 
 ### 2. Create Tables and Populate Data
 
@@ -98,7 +119,9 @@ Options:
   -c, --create-table     Create database tables from schema
   -p, --populate-data    Populate tables with fake data
   -f, --file <path>      Path to JSON schema file
+  -g, --generate <file>  Generate schema interactively (use '.' for default filename)
   -d, --download-schema  Download example schema
+  -v, --version          Show version information
   -h, --help            Display help message
 ```
 
@@ -281,6 +304,33 @@ Create a `schema.json` file defining your database structure:
 }
 ```
 
+## 🎨 Custom Data Patterns
+
+Create custom data formats using the **template generator**:
+
+```json
+{
+  "name": "sku",
+  "generator": "template",
+  "args": {
+    "pattern": "{{word|upper|truncate(3)}}-{{random_int(1000,9999)}}"
+  }
+}
+```
+**Output**: `PRD-4821`, `INV-9234`, `STO-1456`
+
+**More Examples:**
+```json
+{"pattern": "EMP-{{random_int(10000,99999)}}"}         // EMP-45678
+{"pattern": "{{uuid|upper|truncate(8)}}"}               // A1B2C3D4
+{"pattern": "{{city}}, {{state}} {{postcode}}"}         // San Francisco, CA 94102
+```
+
+**Supported Modifiers**: `upper`, `lower`, `title`, `trim`, `truncate(n)`
+
+📚 **[Template Examples](docs/TEMPLATE_EXAMPLES.md)** - Comprehensive examples  
+📖 **[Custom Generators Guide](docs/CUSTOM_GENERATORS.md)** - Full guide with advanced patterns
+
 ## 📚 Documentation
 
 📖 **[Full Documentation on ReadTheDocs](https://fake-stack.readthedocs.io/)** - Complete documentation with examples and tutorials
@@ -288,6 +338,7 @@ Create a `schema.json` file defining your database structure:
 - **[Getting Started](docs/getting-started.md)** - Installation and basic usage
 - **[Schema Reference](docs/schema-reference.md)** - Complete schema documentation
 - **[Data Generators](docs/generators.md)** - All available data generators
+- **[Custom Generators](docs/CUSTOM_GENERATORS.md)** - Template generator guide
 - **[Database Support](docs/databases.md)** - Database-specific configuration
 - **[API Reference](docs/api-reference.md)** - Python and Node.js APIs
 - **[Examples](docs/examples.md)** - Real-world examples
@@ -393,7 +444,7 @@ Built with:
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/0xdps/fake-stack/discussions)
 - 📦 **PyPI**: https://pypi.org/project/fakestack/
 - 📦 **npm**: https://www.npmjs.com/package/fakestack
-- 🍺 **Homebrew**: `brew install 0xdps/fakestack`
+- 🍺 **Homebrew**: `brew tap 0xdps/packages && brew install fakestack`
 
 ## 🔖 Changelog
 
