@@ -52,6 +52,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Manual trigger via GitHub Actions UI (`workflow_dispatch`)
   - Individual checkboxes for selective database testing (all selected by default)
   - Docker-based testing for MySQL, PostgreSQL, MariaDB, MSSQL, SQLite, CockroachDB
+- **Centralized Test Schema**: Created `.github/workflows/comprehensive-test-schema.json`
+  - Single source of truth for all database integration tests
+  - 84 columns covering all 116+ generators (83 fields + 1 auto-increment ID)
+  - Automatic field count validation to prevent missing generators
+  - Schema merging with database-specific configuration using `jq`
+  - Reduced test workflow from 1,477 to 432 lines (71% reduction)
+  - Ensures consistency across all 6 database tests
+  - See `.github/workflows/README.md` for documentation
 - **Documentation**: Added comprehensive configuration examples and Docker setup for new databases
 - **Version Selector**: Added version dropdown to documentation (powered by mike)
 - **Uninstall Script**: Created `scripts/uninstall.sh` for removing fakestack from npm, pip, and Homebrew
