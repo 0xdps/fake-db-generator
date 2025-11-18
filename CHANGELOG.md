@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- *(none yet)*
+- **Go Module Structure**: Moved Go module files back to `golang/` directory
+  - Moved `go.mod`, `go.sum`, and `doc.go` from repository root to `golang/`
+  - Updated CI/CD workflows to reference `golang/go.sum`
+  - Consolidated all Go-related files in a single directory
 
 
 ## [1.1.0] - 2025-11-18
