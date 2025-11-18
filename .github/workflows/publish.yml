@@ -109,7 +109,7 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21'
-        cache-dependency-path: golang/go.sum
+        cache-dependency-path: go.sum
     
     - name: Install cross-compilation tools (Linux ARM64)
       if: matrix.platform == 'linux-arm64'
@@ -118,7 +118,6 @@ jobs:
         sudo apt-get install -y gcc-aarch64-linux-gnu
     
     - name: Build binary
-      working-directory: golang
       shell: bash
       env:
         CGO_ENABLED: 1
@@ -129,14 +128,14 @@ jobs:
           export GOARCH=arm64
         fi
         
-        OUTPUT="../bin/fakestack-${{ matrix.platform }}"
+        OUTPUT="bin/fakestack-${{ matrix.platform }}"
         if [[ "${{ matrix.platform }}" == *"windows"* ]]; then
           OUTPUT="${OUTPUT}.exe"
         fi
         
-        mkdir -p ../bin
+        mkdir -p bin
         VERSION="${{ needs.validate.outputs.version }}"
-        go build -ldflags="-s -w -X main.Version=${VERSION}" -o "$OUTPUT"
+        cd golang && go build -ldflags="-s -w -X main.Version=${VERSION}" -o "../$OUTPUT"
     
     - name: Upload binary
       uses: actions/upload-artifact@v4

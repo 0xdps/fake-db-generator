@@ -1,10 +1,10 @@
 package main
 
 import (
-"encoding/json"
-"fmt"
+	"encoding/json"
+	"fmt"
 
-"github.com/0xdps/fake-stack/core/pkg/generator"
+	"github.com/0xdps/fake-stack/golang/pkg/generator"
 )
 
 func main() {
