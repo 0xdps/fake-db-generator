@@ -49,7 +49,7 @@ func getDriver(dbType DbType) string {
 	switch dbType {
 	case MySQL, MariaDB:
 		return "mysql"
-	case Postgres, CockroachDB:
+	case Postgres, PostgresAlt, CockroachDB:
 		return "postgres"
 	case SQLite:
 		return "sqlite3"
@@ -66,7 +66,7 @@ func buildConnectionString(opts DbOptions) string {
 	case MySQL, MariaDB:
 		return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true",
 			opts.Username, opts.Password, opts.Host, opts.Database)
-	case Postgres, CockroachDB:
+	case Postgres, PostgresAlt, CockroachDB:
 		return fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 			opts.Username, opts.Password, opts.Host, opts.Database)
 	case SQLite:
@@ -197,7 +197,29 @@ func (db *Database) getSQLType(colType ColumnType) string {
 		return "DATETIME"
 	case "text":
 		return "TEXT"
+	case "float":
+		// Use REAL for SQLite, FLOAT for others
+		if db.driver == "sqlite3" {
+			return "REAL"
+		}
+		return "FLOAT"
+	case "decimal":
+		precision := 10
+		scale := 2
+		if colType.Args != nil {
+			if p, ok := colType.Args["precision"].(float64); ok {
+				precision = int(p)
+			}
+			if s, ok := colType.Args["scale"].(float64); ok {
+				scale = int(s)
+			}
+		}
+		return fmt.Sprintf("DECIMAL(%d, %d)", precision, scale)
 	case "boolean":
+		// MSSQL uses BIT instead of BOOLEAN
+		if db.driver == "sqlserver" {
+			return "BIT"
+		}
 		return "BOOLEAN"
 	default:
 		return "VARCHAR(255)"

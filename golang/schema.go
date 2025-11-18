@@ -11,7 +11,8 @@ type DbType string
 
 const (
 	MySQL       DbType = "mysql"
-	Postgres    DbType = "psql"
+	Postgres    DbType = "postgres"
+	PostgresAlt DbType = "psql" // Alternative name for backwards compatibility
 	SQLite      DbType = "sqlite"
 	MSSQL       DbType = "mssql"
 	MariaDB     DbType = "mariadb"

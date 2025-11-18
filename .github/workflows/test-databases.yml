@@ -255,7 +255,7 @@ jobs:
             .github/workflows/test-schema.json \
             <(echo '{
               "dbtype": "sqlite",
-              "host": "test.db"
+              "database": "test.db"
             }') \
             > test-schema.json
           
