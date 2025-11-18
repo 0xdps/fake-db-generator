@@ -198,6 +198,10 @@ func (db *Database) getSQLType(colType ColumnType) string {
 	case "text":
 		return "TEXT"
 	case "boolean":
+		// MSSQL uses BIT instead of BOOLEAN
+		if db.driver == "sqlserver" {
+			return "BIT"
+		}
 		return "BOOLEAN"
 	default:
 		return "VARCHAR(255)"
