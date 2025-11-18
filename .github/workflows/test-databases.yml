@@ -72,105 +72,22 @@ jobs:
       
       - name: Create test schema
         run: |
-          cat > test-schema.json << 'EOF'
-          {
-            "database": {
+          # Merge centralized schema with database-specific config
+          jq -s '.[0] * {"database": .[1]}' \
+            .github/workflows/test-schema.json \
+            <(echo '{
               "dbtype": "mysql",
               "username": "root",
               "password": "testpass",
               "host": "127.0.0.1:3306",
               "database": "testdb"
-            },
-            "tables": [
-              {
-                "name": "comprehensive_test",
-                "columns": [
-                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
-                  {"name": "first_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "last_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "full_name", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "password", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "gender", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "street_address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "city", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "state", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "country", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "postcode", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "latitude", "type": "float"},
-                  {"name": "longitude", "type": "float"},
-                  {"name": "company", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "job_title", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "phone", "type": {"name": "string", "args": {"length": 30}}},
-                  {"name": "url", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "domain", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "ipv4", "type": {"name": "string", "args": {"length": 15}}},
-                  {"name": "ipv6", "type": {"name": "string", "args": {"length": 45}}},
-                  {"name": "mac_address", "type": {"name": "string", "args": {"length": 17}}},
-                  {"name": "date_field", "type": "date"},
-                  {"name": "past_date", "type": "date"},
-                  {"name": "future_date", "type": "date"},
-                  {"name": "word", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "sentence", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "paragraph", "type": "text"},
-                  {"name": "random_int", "type": "integer"},
-                  {"name": "salary", "type": "float"},
-                  {"name": "price", "type": "float"},
-                  {"name": "is_active", "type": "boolean"},
-                  {"name": "uuid", "type": {"name": "string", "args": {"length": 36}}},
-                  {"name": "status", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "priority", "type": {"name": "string", "args": {"length": 20}}}
-                ]
-              }
-            ],
-            "populate": [
-              {
-                "name": "comprehensive_test",
-                "count": 10,
-                "fields": [
-                  {"name": "first_name", "generator": "first_name"},
-                  {"name": "last_name", "generator": "last_name"},
-                  {"name": "full_name", "generator": "name"},
-                  {"name": "username", "generator": "user_name"},
-                  {"name": "email", "generator": "email"},
-                  {"name": "password", "generator": "password"},
-                  {"name": "gender", "generator": "gender"},
-                  {"name": "address", "generator": "address"},
-                  {"name": "street_address", "generator": "street_address"},
-                  {"name": "city", "generator": "city"},
-                  {"name": "state", "generator": "state"},
-                  {"name": "country", "generator": "country"},
-                  {"name": "postcode", "generator": "postcode"},
-                  {"name": "latitude", "generator": "latitude"},
-                  {"name": "longitude", "generator": "longitude"},
-                  {"name": "company", "generator": "company"},
-                  {"name": "job_title", "generator": "job"},
-                  {"name": "phone", "generator": "phone_number"},
-                  {"name": "url", "generator": "url"},
-                  {"name": "domain", "generator": "domain_name"},
-                  {"name": "ipv4", "generator": "ipv4"},
-                  {"name": "ipv6", "generator": "ipv6"},
-                  {"name": "mac_address", "generator": "mac_address"},
-                  {"name": "date_field", "generator": "date"},
-                  {"name": "past_date", "generator": "past_date"},
-                  {"name": "future_date", "generator": "future_date"},
-                  {"name": "word", "generator": "word"},
-                  {"name": "sentence", "generator": "sentence"},
-                  {"name": "paragraph", "generator": "paragraph"},
-                  {"name": "random_int", "generator": "random_int", "args": {"min": 1, "max": 1000}},
-                  {"name": "salary", "generator": "float", "args": {"min": 30000.0, "max": 150000.0}},
-                  {"name": "price", "generator": "decimal", "args": {"min": 9.99, "max": 999.99}},
-                  {"name": "is_active", "generator": "boolean"},
-                  {"name": "uuid", "generator": "uuid"},
-                  {"name": "status", "generator": "random_from", "args": ["active", "inactive", "pending", "suspended"]},
-                  {"name": "priority", "generator": "random_from", "args": ["low", "medium", "high", "urgent"]}
-                ]
-              }
-            ]
-          }
-          EOF
+            }') \
+            > test-schema.json
+          
+          # Verify the schema has all expected fields
+          FIELD_COUNT=$(jq '.populate[0].fields | length' test-schema.json)
+          echo "Schema contains $FIELD_COUNT generator fields"
+          [ "$FIELD_COUNT" -eq 83 ] || (echo "❌ Expected 83 fields, got $FIELD_COUNT" && exit 1)
       
       - name: Test create and populate
         run: |
@@ -220,105 +137,22 @@ jobs:
       
       - name: Create test schema
         run: |
-          cat > test-schema.json << 'EOF'
-          {
-            "database": {
-              "dbtype": "mariadb",
+          # Merge centralized schema with database-specific config
+          jq -s '.[0] * {"database": .[1]}' \
+            .github/workflows/test-schema.json \
+            <(echo '{
+              "dbtype": "mysql",
               "username": "root",
               "password": "testpass",
               "host": "127.0.0.1:3306",
               "database": "testdb"
-            },
-            "tables": [
-              {
-                "name": "comprehensive_test",
-                "columns": [
-                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
-                  {"name": "first_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "last_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "full_name", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "password", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "gender", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "street_address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "city", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "state", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "country", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "postcode", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "latitude", "type": "float"},
-                  {"name": "longitude", "type": "float"},
-                  {"name": "company", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "job_title", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "phone", "type": {"name": "string", "args": {"length": 30}}},
-                  {"name": "url", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "domain", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "ipv4", "type": {"name": "string", "args": {"length": 15}}},
-                  {"name": "ipv6", "type": {"name": "string", "args": {"length": 45}}},
-                  {"name": "mac_address", "type": {"name": "string", "args": {"length": 17}}},
-                  {"name": "date_field", "type": "date"},
-                  {"name": "past_date", "type": "date"},
-                  {"name": "future_date", "type": "date"},
-                  {"name": "word", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "sentence", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "paragraph", "type": "text"},
-                  {"name": "random_int", "type": "integer"},
-                  {"name": "salary", "type": "float"},
-                  {"name": "price", "type": "float"},
-                  {"name": "is_active", "type": "boolean"},
-                  {"name": "uuid", "type": {"name": "string", "args": {"length": 36}}},
-                  {"name": "status", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "priority", "type": {"name": "string", "args": {"length": 20}}}
-                ]
-              }
-            ],
-            "populate": [
-              {
-                "name": "comprehensive_test",
-                "count": 10,
-                "fields": [
-                  {"name": "first_name", "generator": "first_name"},
-                  {"name": "last_name", "generator": "last_name"},
-                  {"name": "full_name", "generator": "name"},
-                  {"name": "username", "generator": "user_name"},
-                  {"name": "email", "generator": "email"},
-                  {"name": "password", "generator": "password"},
-                  {"name": "gender", "generator": "gender"},
-                  {"name": "address", "generator": "address"},
-                  {"name": "street_address", "generator": "street_address"},
-                  {"name": "city", "generator": "city"},
-                  {"name": "state", "generator": "state"},
-                  {"name": "country", "generator": "country"},
-                  {"name": "postcode", "generator": "postcode"},
-                  {"name": "latitude", "generator": "latitude"},
-                  {"name": "longitude", "generator": "longitude"},
-                  {"name": "company", "generator": "company"},
-                  {"name": "job_title", "generator": "job"},
-                  {"name": "phone", "generator": "phone_number"},
-                  {"name": "url", "generator": "url"},
-                  {"name": "domain", "generator": "domain_name"},
-                  {"name": "ipv4", "generator": "ipv4"},
-                  {"name": "ipv6", "generator": "ipv6"},
-                  {"name": "mac_address", "generator": "mac_address"},
-                  {"name": "date_field", "generator": "date"},
-                  {"name": "past_date", "generator": "past_date"},
-                  {"name": "future_date", "generator": "future_date"},
-                  {"name": "word", "generator": "word"},
-                  {"name": "sentence", "generator": "sentence"},
-                  {"name": "paragraph", "generator": "paragraph"},
-                  {"name": "random_int", "generator": "random_int", "args": {"min": 1, "max": 1000}},
-                  {"name": "salary", "generator": "float", "args": {"min": 30000.0, "max": 150000.0}},
-                  {"name": "price", "generator": "decimal", "args": {"min": 9.99, "max": 999.99}},
-                  {"name": "is_active", "generator": "boolean"},
-                  {"name": "uuid", "generator": "uuid"},
-                  {"name": "status", "generator": "random_from", "args": ["active", "inactive", "pending", "suspended"]},
-                  {"name": "priority", "generator": "random_from", "args": ["low", "medium", "high", "urgent"]}
-                ]
-              }
-            ]
-          }
-          EOF
+            }') \
+            > test-schema.json
+          
+          # Verify the schema has all expected fields
+          FIELD_COUNT=$(jq '.populate[0].fields | length' test-schema.json)
+          echo "Schema contains $FIELD_COUNT generator fields"
+          [ "$FIELD_COUNT" -eq 83 ] || (echo "❌ Expected 83 fields, got $FIELD_COUNT" && exit 1)
       
       - name: Test create and populate
         run: |
@@ -368,105 +202,22 @@ jobs:
       
       - name: Create test schema
         run: |
-          cat > test-schema.json << 'EOF'
-          {
-            "database": {
-              "dbtype": "psql",
+          # Merge centralized schema with database-specific config
+          jq -s '.[0] * {"database": .[1]}' \
+            .github/workflows/test-schema.json \
+            <(echo '{
+              "dbtype": "postgres",
               "username": "postgres",
               "password": "testpass",
               "host": "localhost:5432",
               "database": "testdb"
-            },
-            "tables": [
-              {
-                "name": "comprehensive_test",
-                "columns": [
-                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
-                  {"name": "first_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "last_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "full_name", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "password", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "gender", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "street_address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "city", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "state", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "country", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "postcode", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "latitude", "type": "float"},
-                  {"name": "longitude", "type": "float"},
-                  {"name": "company", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "job_title", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "phone", "type": {"name": "string", "args": {"length": 30}}},
-                  {"name": "url", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "domain", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "ipv4", "type": {"name": "string", "args": {"length": 15}}},
-                  {"name": "ipv6", "type": {"name": "string", "args": {"length": 45}}},
-                  {"name": "mac_address", "type": {"name": "string", "args": {"length": 17}}},
-                  {"name": "date_field", "type": "date"},
-                  {"name": "past_date", "type": "date"},
-                  {"name": "future_date", "type": "date"},
-                  {"name": "word", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "sentence", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "paragraph", "type": "text"},
-                  {"name": "random_int", "type": "integer"},
-                  {"name": "salary", "type": "float"},
-                  {"name": "price", "type": "float"},
-                  {"name": "is_active", "type": "boolean"},
-                  {"name": "uuid", "type": {"name": "string", "args": {"length": 36}}},
-                  {"name": "status", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "priority", "type": {"name": "string", "args": {"length": 20}}}
-                ]
-              }
-            ],
-            "populate": [
-              {
-                "name": "comprehensive_test",
-                "count": 10,
-                "fields": [
-                  {"name": "first_name", "generator": "first_name"},
-                  {"name": "last_name", "generator": "last_name"},
-                  {"name": "full_name", "generator": "name"},
-                  {"name": "username", "generator": "user_name"},
-                  {"name": "email", "generator": "email"},
-                  {"name": "password", "generator": "password"},
-                  {"name": "gender", "generator": "gender"},
-                  {"name": "address", "generator": "address"},
-                  {"name": "street_address", "generator": "street_address"},
-                  {"name": "city", "generator": "city"},
-                  {"name": "state", "generator": "state"},
-                  {"name": "country", "generator": "country"},
-                  {"name": "postcode", "generator": "postcode"},
-                  {"name": "latitude", "generator": "latitude"},
-                  {"name": "longitude", "generator": "longitude"},
-                  {"name": "company", "generator": "company"},
-                  {"name": "job_title", "generator": "job"},
-                  {"name": "phone", "generator": "phone_number"},
-                  {"name": "url", "generator": "url"},
-                  {"name": "domain", "generator": "domain_name"},
-                  {"name": "ipv4", "generator": "ipv4"},
-                  {"name": "ipv6", "generator": "ipv6"},
-                  {"name": "mac_address", "generator": "mac_address"},
-                  {"name": "date_field", "generator": "date"},
-                  {"name": "past_date", "generator": "past_date"},
-                  {"name": "future_date", "generator": "future_date"},
-                  {"name": "word", "generator": "word"},
-                  {"name": "sentence", "generator": "sentence"},
-                  {"name": "paragraph", "generator": "paragraph"},
-                  {"name": "random_int", "generator": "random_int", "args": {"min": 1, "max": 1000}},
-                  {"name": "salary", "generator": "float", "args": {"min": 30000.0, "max": 150000.0}},
-                  {"name": "price", "generator": "decimal", "args": {"min": 9.99, "max": 999.99}},
-                  {"name": "is_active", "generator": "boolean"},
-                  {"name": "uuid", "generator": "uuid"},
-                  {"name": "status", "generator": "random_from", "args": ["active", "inactive", "pending", "suspended"]},
-                  {"name": "priority", "generator": "random_from", "args": ["low", "medium", "high", "urgent"]}
-                ]
-              }
-            ]
-          }
-          EOF
+            }') \
+            > test-schema.json
+          
+          # Verify the schema has all expected fields
+          FIELD_COUNT=$(jq '.populate[0].fields | length' test-schema.json)
+          echo "Schema contains $FIELD_COUNT generator fields"
+          [ "$FIELD_COUNT" -eq 83 ] || (echo "❌ Expected 83 fields, got $FIELD_COUNT" && exit 1)
       
       - name: Test create and populate
         run: |
@@ -502,102 +253,19 @@ jobs:
       
       - name: Create test schema
         run: |
-          cat > test-schema.json << 'EOF'
-          {
-            "database": {
+          # Merge centralized schema with database-specific config
+          jq -s '.[0] * {"database": .[1]}' \
+            .github/workflows/test-schema.json \
+            <(echo '{
               "dbtype": "sqlite",
-              "database": "test.db"
-            },
-            "tables": [
-              {
-                "name": "comprehensive_test",
-                "columns": [
-                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
-                  {"name": "first_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "last_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "full_name", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "password", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "gender", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "street_address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "city", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "state", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "country", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "postcode", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "latitude", "type": "float"},
-                  {"name": "longitude", "type": "float"},
-                  {"name": "company", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "job_title", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "phone", "type": {"name": "string", "args": {"length": 30}}},
-                  {"name": "url", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "domain", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "ipv4", "type": {"name": "string", "args": {"length": 15}}},
-                  {"name": "ipv6", "type": {"name": "string", "args": {"length": 45}}},
-                  {"name": "mac_address", "type": {"name": "string", "args": {"length": 17}}},
-                  {"name": "date_field", "type": "date"},
-                  {"name": "past_date", "type": "date"},
-                  {"name": "future_date", "type": "date"},
-                  {"name": "word", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "sentence", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "paragraph", "type": "text"},
-                  {"name": "random_int", "type": "integer"},
-                  {"name": "salary", "type": "float"},
-                  {"name": "price", "type": "float"},
-                  {"name": "is_active", "type": "boolean"},
-                  {"name": "uuid", "type": {"name": "string", "args": {"length": 36}}},
-                  {"name": "status", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "priority", "type": {"name": "string", "args": {"length": 20}}}
-                ]
-              }
-            ],
-            "populate": [
-              {
-                "name": "comprehensive_test",
-                "count": 10,
-                "fields": [
-                  {"name": "first_name", "generator": "first_name"},
-                  {"name": "last_name", "generator": "last_name"},
-                  {"name": "full_name", "generator": "name"},
-                  {"name": "username", "generator": "user_name"},
-                  {"name": "email", "generator": "email"},
-                  {"name": "password", "generator": "password"},
-                  {"name": "gender", "generator": "gender"},
-                  {"name": "address", "generator": "address"},
-                  {"name": "street_address", "generator": "street_address"},
-                  {"name": "city", "generator": "city"},
-                  {"name": "state", "generator": "state"},
-                  {"name": "country", "generator": "country"},
-                  {"name": "postcode", "generator": "postcode"},
-                  {"name": "latitude", "generator": "latitude"},
-                  {"name": "longitude", "generator": "longitude"},
-                  {"name": "company", "generator": "company"},
-                  {"name": "job_title", "generator": "job"},
-                  {"name": "phone", "generator": "phone_number"},
-                  {"name": "url", "generator": "url"},
-                  {"name": "domain", "generator": "domain_name"},
-                  {"name": "ipv4", "generator": "ipv4"},
-                  {"name": "ipv6", "generator": "ipv6"},
-                  {"name": "mac_address", "generator": "mac_address"},
-                  {"name": "date_field", "generator": "date"},
-                  {"name": "past_date", "generator": "past_date"},
-                  {"name": "future_date", "generator": "future_date"},
-                  {"name": "word", "generator": "word"},
-                  {"name": "sentence", "generator": "sentence"},
-                  {"name": "paragraph", "generator": "paragraph"},
-                  {"name": "random_int", "generator": "random_int", "args": {"min": 1, "max": 1000}},
-                  {"name": "salary", "generator": "float", "args": {"min": 30000.0, "max": 150000.0}},
-                  {"name": "price", "generator": "decimal", "args": {"min": 9.99, "max": 999.99}},
-                  {"name": "is_active", "generator": "boolean"},
-                  {"name": "uuid", "generator": "uuid"},
-                  {"name": "status", "generator": "random_from", "args": ["active", "inactive", "pending", "suspended"]},
-                  {"name": "priority", "generator": "random_from", "args": ["low", "medium", "high", "urgent"]}
-                ]
-              }
-            ]
-          }
-          EOF
+              "host": "test.db"
+            }') \
+            > test-schema.json
+          
+          # Verify the schema has all expected fields
+          FIELD_COUNT=$(jq '.populate[0].fields | length' test-schema.json)
+          echo "Schema contains $FIELD_COUNT generator fields"
+          [ "$FIELD_COUNT" -eq 83 ] || (echo "❌ Expected 83 fields, got $FIELD_COUNT" && exit 1)
       
       - name: Test create and populate
         run: |
@@ -652,105 +320,22 @@ jobs:
       
       - name: Create test schema
         run: |
-          cat > test-schema.json << 'EOF'
-          {
-            "database": {
+          # Merge centralized schema with database-specific config
+          jq -s '.[0] * {"database": .[1]}' \
+            .github/workflows/test-schema.json \
+            <(echo '{
               "dbtype": "mssql",
               "username": "sa",
-              "password": "TestPass123!",
+              "password": "YourStrong@Passw0rd",
               "host": "localhost:1433",
               "database": "testdb"
-            },
-            "tables": [
-              {
-                "name": "comprehensive_test",
-                "columns": [
-                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
-                  {"name": "first_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "last_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "full_name", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "password", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "gender", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "street_address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "city", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "state", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "country", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "postcode", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "latitude", "type": "float"},
-                  {"name": "longitude", "type": "float"},
-                  {"name": "company", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "job_title", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "phone", "type": {"name": "string", "args": {"length": 30}}},
-                  {"name": "url", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "domain", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "ipv4", "type": {"name": "string", "args": {"length": 15}}},
-                  {"name": "ipv6", "type": {"name": "string", "args": {"length": 45}}},
-                  {"name": "mac_address", "type": {"name": "string", "args": {"length": 17}}},
-                  {"name": "date_field", "type": "date"},
-                  {"name": "past_date", "type": "date"},
-                  {"name": "future_date", "type": "date"},
-                  {"name": "word", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "sentence", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "paragraph", "type": "text"},
-                  {"name": "random_int", "type": "integer"},
-                  {"name": "salary", "type": "float"},
-                  {"name": "price", "type": "float"},
-                  {"name": "is_active", "type": "boolean"},
-                  {"name": "uuid", "type": {"name": "string", "args": {"length": 36}}},
-                  {"name": "status", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "priority", "type": {"name": "string", "args": {"length": 20}}}
-                ]
-              }
-            ],
-            "populate": [
-              {
-                "name": "comprehensive_test",
-                "count": 10,
-                "fields": [
-                  {"name": "first_name", "generator": "first_name"},
-                  {"name": "last_name", "generator": "last_name"},
-                  {"name": "full_name", "generator": "name"},
-                  {"name": "username", "generator": "user_name"},
-                  {"name": "email", "generator": "email"},
-                  {"name": "password", "generator": "password"},
-                  {"name": "gender", "generator": "gender"},
-                  {"name": "address", "generator": "address"},
-                  {"name": "street_address", "generator": "street_address"},
-                  {"name": "city", "generator": "city"},
-                  {"name": "state", "generator": "state"},
-                  {"name": "country", "generator": "country"},
-                  {"name": "postcode", "generator": "postcode"},
-                  {"name": "latitude", "generator": "latitude"},
-                  {"name": "longitude", "generator": "longitude"},
-                  {"name": "company", "generator": "company"},
-                  {"name": "job_title", "generator": "job"},
-                  {"name": "phone", "generator": "phone_number"},
-                  {"name": "url", "generator": "url"},
-                  {"name": "domain", "generator": "domain_name"},
-                  {"name": "ipv4", "generator": "ipv4"},
-                  {"name": "ipv6", "generator": "ipv6"},
-                  {"name": "mac_address", "generator": "mac_address"},
-                  {"name": "date_field", "generator": "date"},
-                  {"name": "past_date", "generator": "past_date"},
-                  {"name": "future_date", "generator": "future_date"},
-                  {"name": "word", "generator": "word"},
-                  {"name": "sentence", "generator": "sentence"},
-                  {"name": "paragraph", "generator": "paragraph"},
-                  {"name": "random_int", "generator": "random_int", "args": {"min": 1, "max": 1000}},
-                  {"name": "salary", "generator": "float", "args": {"min": 30000.0, "max": 150000.0}},
-                  {"name": "price", "generator": "decimal", "args": {"min": 9.99, "max": 999.99}},
-                  {"name": "is_active", "generator": "boolean"},
-                  {"name": "uuid", "generator": "uuid"},
-                  {"name": "status", "generator": "random_from", "args": ["active", "inactive", "pending", "suspended"]},
-                  {"name": "priority", "generator": "random_from", "args": ["low", "medium", "high", "urgent"]}
-                ]
-              }
-            ]
-          }
-          EOF
+            }') \
+            > test-schema.json
+          
+          # Verify the schema has all expected fields
+          FIELD_COUNT=$(jq '.populate[0].fields | length' test-schema.json)
+          echo "Schema contains $FIELD_COUNT generator fields"
+          [ "$FIELD_COUNT" -eq 83 ] || (echo "❌ Expected 83 fields, got $FIELD_COUNT" && exit 1)
       
       - name: Test create and populate
         run: |
@@ -799,105 +384,22 @@ jobs:
       
       - name: Create test schema
         run: |
-          cat > test-schema.json << 'EOF'
-          {
-            "database": {
-              "dbtype": "cockroachdb",
+          # Merge centralized schema with database-specific config
+          jq -s '.[0] * {"database": .[1]}' \
+            .github/workflows/test-schema.json \
+            <(echo '{
+              "dbtype": "postgres",
               "username": "root",
               "password": "",
               "host": "localhost:26257",
               "database": "testdb"
-            },
-            "tables": [
-              {
-                "name": "comprehensive_test",
-                "columns": [
-                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
-                  {"name": "first_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "last_name", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "full_name", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "password", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "gender", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "street_address", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "city", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "state", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "country", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "postcode", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "latitude", "type": "float"},
-                  {"name": "longitude", "type": "float"},
-                  {"name": "company", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "job_title", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "phone", "type": {"name": "string", "args": {"length": 30}}},
-                  {"name": "url", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "domain", "type": {"name": "string", "args": {"length": 100}}},
-                  {"name": "ipv4", "type": {"name": "string", "args": {"length": 15}}},
-                  {"name": "ipv6", "type": {"name": "string", "args": {"length": 45}}},
-                  {"name": "mac_address", "type": {"name": "string", "args": {"length": 17}}},
-                  {"name": "date_field", "type": "date"},
-                  {"name": "past_date", "type": "date"},
-                  {"name": "future_date", "type": "date"},
-                  {"name": "word", "type": {"name": "string", "args": {"length": 50}}},
-                  {"name": "sentence", "type": {"name": "string", "args": {"length": 255}}},
-                  {"name": "paragraph", "type": "text"},
-                  {"name": "random_int", "type": "integer"},
-                  {"name": "salary", "type": "float"},
-                  {"name": "price", "type": "float"},
-                  {"name": "is_active", "type": "boolean"},
-                  {"name": "uuid", "type": {"name": "string", "args": {"length": 36}}},
-                  {"name": "status", "type": {"name": "string", "args": {"length": 20}}},
-                  {"name": "priority", "type": {"name": "string", "args": {"length": 20}}}
-                ]
-              }
-            ],
-            "populate": [
-              {
-                "name": "comprehensive_test",
-                "count": 10,
-                "fields": [
-                  {"name": "first_name", "generator": "first_name"},
-                  {"name": "last_name", "generator": "last_name"},
-                  {"name": "full_name", "generator": "name"},
-                  {"name": "username", "generator": "user_name"},
-                  {"name": "email", "generator": "email"},
-                  {"name": "password", "generator": "password"},
-                  {"name": "gender", "generator": "gender"},
-                  {"name": "address", "generator": "address"},
-                  {"name": "street_address", "generator": "street_address"},
-                  {"name": "city", "generator": "city"},
-                  {"name": "state", "generator": "state"},
-                  {"name": "country", "generator": "country"},
-                  {"name": "postcode", "generator": "postcode"},
-                  {"name": "latitude", "generator": "latitude"},
-                  {"name": "longitude", "generator": "longitude"},
-                  {"name": "company", "generator": "company"},
-                  {"name": "job_title", "generator": "job"},
-                  {"name": "phone", "generator": "phone_number"},
-                  {"name": "url", "generator": "url"},
-                  {"name": "domain", "generator": "domain_name"},
-                  {"name": "ipv4", "generator": "ipv4"},
-                  {"name": "ipv6", "generator": "ipv6"},
-                  {"name": "mac_address", "generator": "mac_address"},
-                  {"name": "date_field", "generator": "date"},
-                  {"name": "past_date", "generator": "past_date"},
-                  {"name": "future_date", "generator": "future_date"},
-                  {"name": "word", "generator": "word"},
-                  {"name": "sentence", "generator": "sentence"},
-                  {"name": "paragraph", "generator": "paragraph"},
-                  {"name": "random_int", "generator": "random_int", "args": {"min": 1, "max": 1000}},
-                  {"name": "salary", "generator": "float", "args": {"min": 30000.0, "max": 150000.0}},
-                  {"name": "price", "generator": "decimal", "args": {"min": 9.99, "max": 999.99}},
-                  {"name": "is_active", "generator": "boolean"},
-                  {"name": "uuid", "generator": "uuid"},
-                  {"name": "status", "generator": "random_from", "args": ["active", "inactive", "pending", "suspended"]},
-                  {"name": "priority", "generator": "random_from", "args": ["low", "medium", "high", "urgent"]}
-                ]
-              }
-            ]
-          }
-          EOF
+            }') \
+            > test-schema.json
+          
+          # Verify the schema has all expected fields
+          FIELD_COUNT=$(jq '.populate[0].fields | length' test-schema.json)
+          echo "Schema contains $FIELD_COUNT generator fields"
+          [ "$FIELD_COUNT" -eq 83 ] || (echo "❌ Expected 83 fields, got $FIELD_COUNT" && exit 1)
       
       - name: Test create and populate
         run: |
