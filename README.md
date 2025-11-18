@@ -62,13 +62,33 @@ Pre-built binaries available on [GitHub Releases](https://github.com/0xdps/fake-
 
 ## 🚀 Quick Start
 
-### 1. Download Example Schema
+### 1. Generate a Schema (Interactive)
+
+Use the built-in interactive generator:
+
+```bash
+fakestack -g .
+# or specify output filename
+fakestack -g my-schema.json
+```
+
+Choose from 10 pre-built templates:
+- **Users** - Basic user management
+- **Employees** - Employee records with departments
+- **Products** - E-commerce products
+- **Orders** - Order management system
+- **Customers** - Customer database
+- **Blog Posts** - Content management
+- **Inventory** - Stock management
+- **Transactions** - Financial records
+- **Students** - Educational records
+- **Tasks** - Task management
+
+Or download a basic example:
 
 ```bash
 fakestack -d .
 ```
-
-This creates a `schema.json` file in the current directory.
 
 ### 2. Create Tables and Populate Data
 
@@ -98,7 +118,9 @@ Options:
   -c, --create-table     Create database tables from schema
   -p, --populate-data    Populate tables with fake data
   -f, --file <path>      Path to JSON schema file
+  -g, --generate <file>  Generate schema interactively (use '.' for default filename)
   -d, --download-schema  Download example schema
+  -v, --version          Show version information
   -h, --help            Display help message
 ```
 

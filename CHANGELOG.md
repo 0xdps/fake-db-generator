@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Interactive Schema Generator**: New `-g` / `--generate` CLI flag for creating schemas
+  - Built directly into fakestack CLI (no separate script needed)
+  - 10 pre-built templates (Users, Employees, Products, Orders, Customers, Blog Posts, Inventory, Transactions, Students, Tasks)
+  - Support for all 6 database types
+  - Customizable database credentials and output filename
+  - Automatic row count suggestions per template
+  - Usage: `fakestack -g .` or `fakestack -g my-schema.json`
+  - Implementation in `golang/templates.go` for clean code organization
+- **New Generators**: Added `integer`, `float`, and `decimal` generators with min/max range support
+  - `integer` / `random_int` - Generate integers with configurable min/max range
+  - `float` / `decimal` - Generate floating-point numbers with configurable min/max range
+  - Backward compatible with existing `random_int` generator
 - **Database Support**: Added support for 3 additional database systems
   - MariaDB - MySQL-compatible database with enhanced features
   - MS SQL Server - Microsoft's enterprise database with IDENTITY syntax support
@@ -27,6 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prepares tap for additional tools beyond fakestack
 - **Database Driver**: Added Microsoft SQL Server driver (`github.com/denisenkom/go-mssqldb`)
 - **Documentation**: Updated all installation instructions to use new tap name
+
+### Fixed
+- **MSSQL Compatibility**: Fixed SQL syntax issues for MS SQL Server
+  - Added square brackets `[table]` and `[column]` around identifiers
+  - Changed placeholders from `?` to `@p1, @p2, @p3` format
+  - Updated `CREATE TABLE` to use `IF OBJECT_ID` syntax
+  - Updated `DROP TABLE` to use `IF OBJECT_ID` syntax
+  - Fixed sqlcmd path in workflow to `/opt/mssql-tools18/bin/sqlcmd` with `-C` flag
 
 ### Technical Details
 - Total supported databases: **6** (SQLite, MySQL, PostgreSQL, MariaDB, MSSQL, CockroachDB)

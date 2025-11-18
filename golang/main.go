@@ -78,6 +78,9 @@ func main() {
 	downloadSchema := flag.String("d", "", "download example schema to specified path (use '.' for current directory)")
 	downloadSchemaLong := flag.String("download-schema", "", "download example schema to specified path")
 	
+	generateSchema := flag.String("g", "", "generate schema interactively (specify output filename or use '.' for default)")
+	generateSchemaLong := flag.String("generate", "", "generate schema interactively (specify output filename)")
+	
 	versionFlag := flag.Bool("v", false, "show version information")
 	versionFlagLong := flag.Bool("version", false, "show version information")
 
@@ -107,6 +110,23 @@ func main() {
 	if download == "" {
 		download = *downloadSchemaLong
 	}
+	generate := *generateSchema
+	if generate == "" {
+		generate = *generateSchemaLong
+	}
+
+	// Handle generate schema (interactive)
+	if generate != "" {
+		outputFile := ""
+		if generate != "." {
+			outputFile = generate
+		}
+		if err := RunInteractiveGenerator(outputFile); err != nil {
+			fmt.Fprintf(os.Stderr, "Error generating schema: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
 
 	// Handle download schema
 	if download != "" {
@@ -121,7 +141,7 @@ func main() {
 	// Validate arguments
 	if !create && !populate {
 		fmt.Fprintf(os.Stderr, "Error: no arguments provided!!!\n")
-		fmt.Fprintf(os.Stderr, "Use -c to create tables, -p to populate data, or -d to download example schema\n")
+		fmt.Fprintf(os.Stderr, "Use -c to create tables, -p to populate data, -g to generate schema, or -d to download example\n")
 		flag.Usage()
 		os.Exit(1)
 	}

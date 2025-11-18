@@ -109,7 +109,7 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 		return g.fake.Word(), nil
 
 	// Numbers
-	case "random_int":
+	case "integer", "random_int":
 		min, max := 0, 100
 		if argsMap, ok := args.(map[string]interface{}); ok {
 			if minVal, ok := argsMap["min"].(float64); ok {
@@ -120,6 +120,17 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 			}
 		}
 		return g.fake.IntRange(min, max), nil
+	case "float", "decimal":
+		min, max := 0.0, 100.0
+		if argsMap, ok := args.(map[string]interface{}); ok {
+			if minVal, ok := argsMap["min"].(float64); ok {
+				min = minVal
+			}
+			if maxVal, ok := argsMap["max"].(float64); ok {
+				max = maxVal
+			}
+		}
+		return g.fake.Float64Range(min, max), nil
 	case "random_digit":
 		return g.fake.Digit(), nil
 	case "random_number":
