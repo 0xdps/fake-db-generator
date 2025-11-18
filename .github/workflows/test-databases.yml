@@ -1,0 +1,418 @@
+name: Test Database Support
+
+# Manual trigger only - run on demand to test all database integrations
+on:
+  workflow_dispatch:
+    inputs:
+      test_all:
+        description: 'Test all databases'
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  test-mysql:
+    name: Test MySQL
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_all == 'true'
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testpass
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache-dependency-path: golang/go.sum
+      
+      - name: Build fakestack
+        working-directory: golang
+        run: |
+          CGO_ENABLED=1 go build -o ../bin/fakestack-test
+          chmod +x ../bin/fakestack-test
+      
+      - name: Create test schema
+        run: |
+          cat > test-schema.json << 'EOF'
+          {
+            "database": {
+              "dbtype": "mysql",
+              "username": "root",
+              "password": "testpass",
+              "host": "127.0.0.1:3306",
+              "database": "testdb"
+            },
+            "tables": [
+              {
+                "name": "users",
+                "columns": [
+                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
+                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}, "options": {"nullable": false}},
+                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}, "options": {"nullable": false}}
+                ]
+              }
+            ],
+            "populate": [
+              {
+                "name": "users",
+                "count": 10,
+                "fields": [
+                  {"name": "username", "generator": "user_name"},
+                  {"name": "email", "generator": "email"}
+                ]
+              }
+            ]
+          }
+          EOF
+      
+      - name: Test create and populate
+        run: |
+          ./bin/fakestack-test -c -f test-schema.json
+          ./bin/fakestack-test -p -f test-schema.json
+      
+      - name: Verify data
+        run: |
+          sudo apt-get update && sudo apt-get install -y mysql-client
+          COUNT=$(mysql -h 127.0.0.1 -u root -ptestpass testdb -N -s -e "SELECT COUNT(*) FROM users;")
+          echo "Found $COUNT rows"
+          [ "$COUNT" -eq 10 ] && echo "✅ MySQL test passed"
+
+  test-mariadb:
+    name: Test MariaDB
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_all == 'true'
+    
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MYSQL_ROOT_PASSWORD: testpass
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache-dependency-path: golang/go.sum
+      
+      - name: Build fakestack
+        working-directory: golang
+        run: |
+          CGO_ENABLED=1 go build -o ../bin/fakestack-test
+          chmod +x ../bin/fakestack-test
+      
+      - name: Create test schema
+        run: |
+          cat > test-schema.json << 'EOF'
+          {
+            "database": {
+              "dbtype": "mariadb",
+              "username": "root",
+              "password": "testpass",
+              "host": "127.0.0.1:3306",
+              "database": "testdb"
+            },
+            "tables": [
+              {
+                "name": "users",
+                "columns": [
+                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
+                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}, "options": {"nullable": false}},
+                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}, "options": {"nullable": false}}
+                ]
+              }
+            ],
+            "populate": [
+              {
+                "name": "users",
+                "count": 10,
+                "fields": [
+                  {"name": "username", "generator": "user_name"},
+                  {"name": "email", "generator": "email"}
+                ]
+              }
+            ]
+          }
+          EOF
+      
+      - name: Test create and populate
+        run: |
+          ./bin/fakestack-test -c -f test-schema.json
+          ./bin/fakestack-test -p -f test-schema.json
+      
+      - name: Verify data
+        run: |
+          sudo apt-get update && sudo apt-get install -y mysql-client
+          COUNT=$(mysql -h 127.0.0.1 -u root -ptestpass testdb -N -s -e "SELECT COUNT(*) FROM users;")
+          echo "Found $COUNT rows"
+          [ "$COUNT" -eq 10 ] && echo "✅ MariaDB test passed"
+
+  test-postgres:
+    name: Test PostgreSQL
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_all == 'true'
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache-dependency-path: golang/go.sum
+      
+      - name: Build fakestack
+        working-directory: golang
+        run: |
+          CGO_ENABLED=1 go build -o ../bin/fakestack-test
+          chmod +x ../bin/fakestack-test
+      
+      - name: Create test schema
+        run: |
+          cat > test-schema.json << 'EOF'
+          {
+            "database": {
+              "dbtype": "psql",
+              "username": "postgres",
+              "password": "testpass",
+              "host": "localhost:5432",
+              "database": "testdb"
+            },
+            "tables": [
+              {
+                "name": "users",
+                "columns": [
+                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
+                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}, "options": {"nullable": false}},
+                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}, "options": {"nullable": false}}
+                ]
+              }
+            ],
+            "populate": [
+              {
+                "name": "users",
+                "count": 10,
+                "fields": [
+                  {"name": "username", "generator": "user_name"},
+                  {"name": "email", "generator": "email"}
+                ]
+              }
+            ]
+          }
+          EOF
+      
+      - name: Test create and populate
+        run: |
+          ./bin/fakestack-test -c -f test-schema.json
+          ./bin/fakestack-test -p -f test-schema.json
+      
+      - name: Verify data
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          COUNT=$(PGPASSWORD=testpass psql -h localhost -U postgres testdb -t -c "SELECT COUNT(*) FROM users;" | xargs)
+          echo "Found $COUNT rows"
+          [ "$COUNT" -eq 10 ] && echo "✅ PostgreSQL test passed"
+
+  test-sqlite:
+    name: Test SQLite
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_all == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache-dependency-path: golang/go.sum
+      
+      - name: Build fakestack
+        working-directory: golang
+        run: |
+          CGO_ENABLED=1 go build -o ../bin/fakestack-test
+          chmod +x ../bin/fakestack-test
+      
+      - name: Create test schema
+        run: |
+          cat > test-schema.json << 'EOF'
+          {
+            "database": {
+              "dbtype": "sqlite",
+              "database": "test.db"
+            },
+            "tables": [
+              {
+                "name": "users",
+                "columns": [
+                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
+                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}, "options": {"nullable": false}},
+                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}, "options": {"nullable": false}}
+                ]
+              }
+            ],
+            "populate": [
+              {
+                "name": "users",
+                "count": 10,
+                "fields": [
+                  {"name": "username", "generator": "user_name"},
+                  {"name": "email", "generator": "email"}
+                ]
+              }
+            ]
+          }
+          EOF
+      
+      - name: Test create and populate
+        run: |
+          ./bin/fakestack-test -c -f test-schema.json
+          ./bin/fakestack-test -p -f test-schema.json
+      
+      - name: Verify data
+        run: |
+          sudo apt-get update && sudo apt-get install -y sqlite3
+          COUNT=$(sqlite3 test.db "SELECT COUNT(*) FROM users;")
+          echo "Found $COUNT rows"
+          [ "$COUNT" -eq 10 ] && echo "✅ SQLite test passed"
+
+  test-mssql:
+    name: Test MS SQL Server
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_all == 'true'
+    
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: TestPass123!
+          MSSQL_PID: Developer
+        ports:
+          - 1433:1433
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache-dependency-path: golang/go.sum
+      
+      - name: Wait for MSSQL
+        run: sleep 30
+      
+      - name: Setup database
+        run: |
+          docker exec $(docker ps -q --filter ancestor=mcr.microsoft.com/mssql/server:2022-latest) \
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'TestPass123!' \
+            -Q "CREATE DATABASE testdb;"
+      
+      - name: Build fakestack
+        working-directory: golang
+        run: |
+          CGO_ENABLED=1 go build -o ../bin/fakestack-test
+          chmod +x ../bin/fakestack-test
+      
+      - name: Create test schema
+        run: |
+          cat > test-schema.json << 'EOF'
+          {
+            "database": {
+              "dbtype": "mssql",
+              "username": "sa",
+              "password": "TestPass123!",
+              "host": "localhost:1433",
+              "database": "testdb"
+            },
+            "tables": [
+              {
+                "name": "users",
+                "columns": [
+                  {"name": "id", "type": "integer", "options": {"primary_key": true, "autoincrement": true}},
+                  {"name": "username", "type": {"name": "string", "args": {"length": 50}}, "options": {"nullable": false}},
+                  {"name": "email", "type": {"name": "string", "args": {"length": 100}}, "options": {"nullable": false}}
+                ]
+              }
+            ],
+            "populate": [
+              {
+                "name": "users",
+                "count": 10,
+                "fields": [
+                  {"name": "username", "generator": "user_name"},
+                  {"name": "email", "generator": "email"}
+                ]
+              }
+            ]
+          }
+          EOF
+      
+      - name: Test create and populate
+        run: |
+          ./bin/fakestack-test -c -f test-schema.json
+          ./bin/fakestack-test -p -f test-schema.json
+      
+      - name: Verify data
+        run: |
+          COUNT=$(docker exec $(docker ps -q --filter ancestor=mcr.microsoft.com/mssql/server:2022-latest) \
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'TestPass123!' -d testdb -h -1 \
+            -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM users;" | xargs)
+          echo "Found $COUNT rows"
+          [ "$COUNT" -eq 10 ] && echo "✅ MSSQL test passed"
+
+  summary:
+    name: Test Summary
+    needs: [test-mysql, test-mariadb, test-postgres, test-sqlite, test-mssql]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "🎯 Database Testing Complete"
+          echo "=============================="
+          echo "MySQL: ${{ needs.test-mysql.result }}"
+          echo "MariaDB: ${{ needs.test-mariadb.result }}"
+          echo "PostgreSQL: ${{ needs.test-postgres.result }}"
+          echo "SQLite: ${{ needs.test-sqlite.result }}"
+          echo "MSSQL: ${{ needs.test-mssql.result }}"

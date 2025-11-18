@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
@@ -46,12 +47,14 @@ func (db *Database) Close() error {
 // getDriver returns the SQL driver name
 func getDriver(dbType DbType) string {
 	switch dbType {
-	case MySQL:
+	case MySQL, MariaDB:
 		return "mysql"
-	case Postgres:
+	case Postgres, CockroachDB:
 		return "postgres"
 	case SQLite:
 		return "sqlite3"
+	case MSSQL:
+		return "sqlserver"
 	default:
 		return "sqlite3"
 	}
@@ -60,14 +63,17 @@ func getDriver(dbType DbType) string {
 // buildConnectionString builds a database connection string
 func buildConnectionString(opts DbOptions) string {
 	switch opts.DbType {
-	case MySQL:
+	case MySQL, MariaDB:
 		return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true",
 			opts.Username, opts.Password, opts.Host, opts.Database)
-	case Postgres:
+	case Postgres, CockroachDB:
 		return fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 			opts.Username, opts.Password, opts.Host, opts.Database)
 	case SQLite:
 		return opts.Database
+	case MSSQL:
+		return fmt.Sprintf("sqlserver://%s:%s@%s?database=%s",
+			opts.Username, opts.Password, opts.Host, opts.Database)
 	default:
 		return opts.Database
 	}
@@ -125,8 +131,10 @@ func (db *Database) buildColumnDefinition(col ParsedTableColumn) string {
 				def += " AUTOINCREMENT"
 			} else if db.driver == "mysql" {
 				def += " AUTO_INCREMENT"
+			} else if db.driver == "sqlserver" {
+				def += " IDENTITY(1,1)"
 			} else {
-				// PostgreSQL uses SERIAL or BIGSERIAL
+				// PostgreSQL and CockroachDB use SERIAL or BIGSERIAL
 				def = strings.Replace(def, sqlType, "SERIAL", 1)
 			}
 		}
@@ -212,12 +220,12 @@ func (db *Database) Insert(tableName string, data map[string]interface{}) error 
 func (db *Database) GetRandomValue(tableName, columnName string) (interface{}, error) {
 	var query string
 	switch db.driver {
-	case "sqlite3":
+	case "sqlite3", "postgres":
 		query = fmt.Sprintf("SELECT %s FROM %s ORDER BY RANDOM() LIMIT 1", columnName, tableName)
 	case "mysql":
 		query = fmt.Sprintf("SELECT %s FROM %s ORDER BY RAND() LIMIT 1", columnName, tableName)
-	case "postgres":
-		query = fmt.Sprintf("SELECT %s FROM %s ORDER BY RANDOM() LIMIT 1", columnName, tableName)
+	case "sqlserver":
+		query = fmt.Sprintf("SELECT TOP 1 %s FROM %s ORDER BY NEWID()", columnName, tableName)
 	}
 
 	var value interface{}
