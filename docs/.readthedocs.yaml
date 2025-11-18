@@ -7,14 +7,6 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-  commands:
-    - pip install -r docs/requirements.txt
-    - |
-      if [ -z "$READTHEDOCS_VERSION" ] || [ "$READTHEDOCS_VERSION" = "latest" ]; then
-        mike deploy --push --update-aliases stable latest
-      else
-        mike deploy --push --update-aliases $READTHEDOCS_VERSION latest
-      fi
 
 python:
   install:
