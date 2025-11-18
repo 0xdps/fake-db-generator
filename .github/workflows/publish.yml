@@ -51,8 +51,11 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             REF="${{ github.ref }}"
             TAG_VERSION="${REF#refs/tags/}"
-          else
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TAG_VERSION="${{ inputs.tag }}"
+          else
+            echo "❌ Unexpected event type: ${{ github.event_name }}"
+            exit 1
           fi
           
           VERSION=$(echo "$TAG_VERSION" | sed 's/^v//')
