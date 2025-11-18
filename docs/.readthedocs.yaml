@@ -7,6 +7,9 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+  commands:
+    - pip install mike
+    - mike deploy --push --update-aliases $READTHEDOCS_VERSION latest
 
 python:
   install:
