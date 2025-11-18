@@ -1,6 +1,6 @@
 {
   "name": "fakestack",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "High-performance database generator - Generate databases from JSON schemas with realistic fake data",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

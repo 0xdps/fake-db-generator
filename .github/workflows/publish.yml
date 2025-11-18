@@ -68,16 +68,21 @@ jobs:
           # Get Python version
           PYTHON_VERSION=$(grep -oP '__version__ = "\K[^"]+' python/fakestack/__init__.py)
           
+          # Get Go version
+          GO_VERSION=$(grep -oP 'var Version = "\K[^"]+' golang/main.go)
+          
           echo "🏷️  Git tag version: $VERSION"
           echo "📦 Node package.json version: $NODE_VERSION"
           echo "🐍 Python __init__.py version: $PYTHON_VERSION"
+          echo "⚡ Go main.go version: $GO_VERSION"
           
           # Validate versions match
-          if [ "$VERSION" != "$NODE_VERSION" ] || [ "$VERSION" != "$PYTHON_VERSION" ]; then
+          if [ "$VERSION" != "$NODE_VERSION" ] || [ "$VERSION" != "$PYTHON_VERSION" ] || [ "$VERSION" != "$GO_VERSION" ]; then
             echo "❌ Version mismatch!"
             echo "   Git tag: $TAG_VERSION ($VERSION)"
             echo "   Node package.json: $NODE_VERSION"
             echo "   Python __init__.py: $PYTHON_VERSION"
+            echo "   Go main.go: $GO_VERSION"
             echo ""
             echo "💡 Please ensure all versions match the git tag before publishing."
             exit 1
