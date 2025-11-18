@@ -55,10 +55,9 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21'
-        cache-dependency-path: golang/go.sum
+        cache-dependency-path: go.sum
     
     - name: Install dependencies
-      working-directory: golang
       run: go mod download
     
     - name: Install cross-compilation tools (Linux ARM64)
@@ -68,7 +67,6 @@ jobs:
         sudo apt-get install -y gcc-aarch64-linux-gnu
     
     - name: Build binary
-      working-directory: golang
       shell: bash
       env:
         CGO_ENABLED: 1
@@ -79,13 +77,13 @@ jobs:
           export GOARCH=arm64
         fi
         
-        OUTPUT="../bin/fakestack-${{ matrix.platform }}"
+        OUTPUT="bin/fakestack-${{ matrix.platform }}"
         if [ "${{ matrix.goos }}" = "windows" ]; then
           OUTPUT="${OUTPUT}.exe"
         fi
         
         VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
-        go build -ldflags="-s -w -X main.Version=${VERSION}" -o "$OUTPUT"
+        cd golang && go build -ldflags="-s -w -X main.Version=${VERSION}" -o "../$OUTPUT"
     
     - name: Upload binary
       uses: actions/upload-artifact@v4
@@ -107,10 +105,9 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21'
-        cache-dependency-path: golang/go.sum
+        cache-dependency-path: go.sum
     
     - name: Install dependencies
-      working-directory: golang
       run: go mod download
     
     - name: Run tests
@@ -118,11 +115,9 @@ jobs:
       run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
     
     - name: Build
-      working-directory: golang
-      run: go build -o fakestack -v .
+      run: cd golang && go build -o ../fakestack -v .
     
     - name: Test binary
-      working-directory: golang
       run: |
         ./fakestack -d .
         ./fakestack -c -p -f schema.json
