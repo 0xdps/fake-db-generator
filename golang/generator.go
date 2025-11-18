@@ -11,16 +11,16 @@ import (
 
 // Generator handles fake data generation
 type Generator struct {
-	fake   *gofakeit.Faker
-	db     *Database
+	fake    *gofakeit.Faker
+	db      *Database
 	uniques map[string]map[interface{}]bool
 }
 
 // NewGenerator creates a new Generator
 func NewGenerator(db *Database) *Generator {
 	return &Generator{
-		fake:   gofakeit.New(0),
-		db:     db,
+		fake:    gofakeit.New(0),
+		db:      db,
 		uniques: make(map[string]map[interface{}]bool),
 	}
 }
@@ -486,44 +486,44 @@ func (g *Generator) generateFromTemplate(args interface{}, commons map[string]in
 // parseTemplate parses and executes template pattern
 func (g *Generator) parseTemplate(pattern string, commons map[string]interface{}) (string, error) {
 	result := pattern
-	
+
 	// Find all {{...}} placeholders
 	for {
 		start := strings.Index(result, "{{")
 		if start == -1 {
 			break
 		}
-		
+
 		end := strings.Index(result[start:], "}}")
-		if end == -1{
+		if end == -1 {
 			return "", fmt.Errorf("unclosed template placeholder in: %s", pattern)
 		}
 		end += start
-		
+
 		// Extract placeholder content
 		placeholder := result[start+2 : end]
-		
+
 		// Parse placeholder: generator|modifier1|modifier2
 		parts := strings.Split(placeholder, "|")
 		generatorExpr := strings.TrimSpace(parts[0])
 		modifiers := parts[1:]
-		
+
 		// Generate value
 		value, err := g.executeTemplateGenerator(generatorExpr, commons)
 		if err != nil {
 			return "", fmt.Errorf("failed to execute generator '%s': %w", generatorExpr, err)
 		}
-		
+
 		// Apply modifiers
 		valueStr := fmt.Sprintf("%v", value)
 		for _, modifier := range modifiers {
 			valueStr = g.applyModifier(valueStr, strings.TrimSpace(modifier))
 		}
-		
+
 		// Replace placeholder with generated value
 		result = result[:start] + valueStr + result[end+2:]
 	}
-	
+
 	return result, nil
 }
 
@@ -531,26 +531,26 @@ func (g *Generator) parseTemplate(pattern string, commons map[string]interface{}
 func (g *Generator) executeTemplateGenerator(expr string, commons map[string]interface{}) (interface{}, error) {
 	// Parse generator name and arguments
 	// Format: generator_name or generator_name(arg1,arg2)
-	
+
 	parenIndex := strings.Index(expr, "(")
 	if parenIndex == -1 {
 		// No arguments, simple generator
 		return g.executeSimpleGenerator(expr)
 	}
-	
+
 	// Has arguments
 	generatorName := strings.TrimSpace(expr[:parenIndex])
 	argsStr := expr[parenIndex+1:]
-	
+
 	// Remove closing parenthesis
 	if !strings.HasSuffix(argsStr, ")") {
 		return nil, fmt.Errorf("missing closing parenthesis in: %s", expr)
 	}
 	argsStr = argsStr[:len(argsStr)-1]
-	
+
 	// Parse arguments
 	args := g.parseTemplateArgs(argsStr)
-	
+
 	return g.executeGeneratorWithArgs(generatorName, args)
 }
 
@@ -616,7 +616,7 @@ func (g *Generator) parseTemplateArgs(argsStr string) []string {
 	if argsStr == "" {
 		return []string{}
 	}
-	
+
 	parts := strings.Split(argsStr, ",")
 	args := make([]string, len(parts))
 	for i, part := range parts {
@@ -632,7 +632,7 @@ func (g *Generator) applyModifier(value, modifier string) string {
 	if parenIndex != -1 {
 		modName := modifier[:parenIndex]
 		argStr := modifier[parenIndex+1 : len(modifier)-1]
-		
+
 		switch modName {
 		case "truncate":
 			var length int
@@ -647,7 +647,7 @@ func (g *Generator) applyModifier(value, modifier string) string {
 		}
 		return value
 	}
-	
+
 	// Simple modifiers
 	switch modifier {
 	case "upper":

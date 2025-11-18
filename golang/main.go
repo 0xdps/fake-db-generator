@@ -68,19 +68,19 @@ const exampleSchema = `{
 func main() {
 	createTable := flag.Bool("c", false, "create database tables")
 	createTableLong := flag.Bool("create-table", false, "create database tables")
-	
+
 	populateData := flag.Bool("p", false, "populate tables with fake data")
 	populateDataLong := flag.Bool("populate-data", false, "populate tables with fake data")
-	
+
 	schemaFile := flag.String("f", "", "path to schema JSON file")
 	schemaFileLong := flag.String("file", "", "path to schema JSON file")
-	
+
 	downloadSchema := flag.String("d", "", "download example schema to specified path (use '.' for current directory)")
 	downloadSchemaLong := flag.String("download-schema", "", "download example schema to specified path")
-	
+
 	generateSchema := flag.String("g", "", "generate schema interactively (specify output filename or use '.' for default)")
 	generateSchemaLong := flag.String("generate", "", "generate schema interactively (specify output filename)")
-	
+
 	versionFlag := flag.Bool("v", false, "show version information")
 	versionFlagLong := flag.Bool("version", false, "show version information")
 
@@ -92,7 +92,7 @@ func main() {
 	}
 
 	flag.Parse()
-	
+
 	// Handle version flag
 	if *versionFlag || *versionFlagLong {
 		fmt.Printf("fakestack version %s\n", Version)

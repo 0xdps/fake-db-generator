@@ -1,11 +1,11 @@
 package main
 
 import (
-"bufio"
-"fmt"
-"os"
-"strconv"
-"strings"
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
 )
 
 // SchemaTemplate represents a pre-built schema template
