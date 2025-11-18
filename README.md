@@ -8,7 +8,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/fakestack)](https://pypi.org/project/fakestack/)
 [![npm](https://img.shields.io/npm/v/fakestack)](https://www.npmjs.com/package/fakestack)
-[![Python](https://img.shields.io/pypi/pyversions/fakestack)](https://pypi.org/project/fakestack/)
+[![Python](https://img.shields.io/badge/python-%3E%3D3.8-blue)](https://pypi.org/project/fakestack/)
 [![Node](https://img.shields.io/node/v/fakestack)](https://www.npmjs.com/package/fakestack)
 [![Documentation](https://readthedocs.org/projects/fake-stack/badge/?version=latest)](https://fake-stack.readthedocs.io/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -38,7 +38,7 @@ Generate databases from JSON schemas with realistic fake data. **10-50x faster**
 
 Choose your preferred package manager:
 
-**Python (pip)**
+**Python (pip)** - Requires Python >= 3.8
 ```bash
 pip install fakestack
 ```
