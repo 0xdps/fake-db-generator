@@ -197,6 +197,24 @@ func (db *Database) getSQLType(colType ColumnType) string {
 		return "DATETIME"
 	case "text":
 		return "TEXT"
+	case "float":
+		// Use REAL for SQLite, FLOAT for others
+		if db.driver == "sqlite3" {
+			return "REAL"
+		}
+		return "FLOAT"
+	case "decimal":
+		precision := 10
+		scale := 2
+		if colType.Args != nil {
+			if p, ok := colType.Args["precision"].(float64); ok {
+				precision = int(p)
+			}
+			if s, ok := colType.Args["scale"].(float64); ok {
+				scale = int(s)
+			}
+		}
+		return fmt.Sprintf("DECIMAL(%d, %d)", precision, scale)
 	case "boolean":
 		// MSSQL uses BIT instead of BOOLEAN
 		if db.driver == "sqlserver" {
