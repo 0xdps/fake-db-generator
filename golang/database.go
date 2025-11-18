@@ -214,13 +214,14 @@ func (db *Database) Insert(tableName string, data map[string]interface{}) error 
 	for col, val := range data {
 		if db.driver == "sqlserver" {
 			columns = append(columns, fmt.Sprintf("[%s]", col))
+			placeholders = append(placeholders, fmt.Sprintf("@p%d", i))
 		} else {
 			columns = append(columns, col)
-		}
-		if db.driver == "postgres" {
-			placeholders = append(placeholders, fmt.Sprintf("$%d", i))
-		} else {
-			placeholders = append(placeholders, "?")
+			if db.driver == "postgres" {
+				placeholders = append(placeholders, fmt.Sprintf("$%d", i))
+			} else {
+				placeholders = append(placeholders, "?")
+			}
 		}
 		values = append(values, val)
 		i++
