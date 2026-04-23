@@ -1,3 +1,5 @@
+//go:build ignore
+
 // Package fakestack provides tools for generating realistic fake data and populating databases.
 //
 // Fakestack is a high-performance database generator with realistic fake data.
