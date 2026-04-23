@@ -39,6 +39,25 @@ func NewDatabase(schema *DbSchema) (*Database, error) {
 	}, nil
 }
 
+// applyPragmas sets performance pragmas for SQLite connections.
+func (db *Database) applyPragmas() error {
+	if db.driver != "sqlite3" {
+		return nil
+	}
+	pragmas := []string{
+		"PRAGMA journal_mode = WAL",
+		"PRAGMA synchronous = NORMAL",
+		"PRAGMA cache_size = -64000", // 64 MB page cache
+		"PRAGMA temp_store = MEMORY",
+	}
+	for _, p := range pragmas {
+		if _, err := db.conn.Exec(p); err != nil {
+			return fmt.Errorf("failed to apply pragma (%s): %w", p, err)
+		}
+	}
+	return nil
+}
+
 // Close closes the database connection
 func (db *Database) Close() error {
 	return db.conn.Close()
@@ -262,6 +281,70 @@ func (db *Database) Insert(tableName string, data map[string]interface{}) error 
 		strings.Join(placeholders, ", "))
 
 	_, err := db.conn.Exec(query, values...)
+	return err
+}
+
+// InsertBatch inserts multiple rows into a table within an existing transaction.
+// columns must be ordered consistently across all rows in batch.
+func (db *Database) InsertBatch(tx *sql.Tx, tableName string, columns []string, batch [][]interface{}) error {
+	if len(batch) == 0 {
+		return nil
+	}
+
+	// MSSQL does not support multi-row VALUES with @p params cleanly at scale;
+	// fall back to per-row inserts inside the transaction.
+	if db.driver == "sqlserver" {
+		quotedCols := make([]string, len(columns))
+		for i, c := range columns {
+			quotedCols[i] = fmt.Sprintf("[%s]", c)
+		}
+		tableQuoted := fmt.Sprintf("[%s]", tableName)
+		for rowIdx, row := range batch {
+			placeholders := make([]string, len(columns))
+			for i := range columns {
+				placeholders[i] = fmt.Sprintf("@p%d", i+1)
+			}
+			query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
+				tableQuoted,
+				strings.Join(quotedCols, ", "),
+				strings.Join(placeholders, ", "))
+			if _, err := tx.Exec(query, row...); err != nil {
+				return fmt.Errorf("row %d: %w", rowIdx, err)
+			}
+		}
+		return nil
+	}
+
+	// Build multi-row INSERT: INSERT INTO t (c1,c2) VALUES (?,?),(?,?),...
+	quotedCols := make([]string, len(columns))
+	for i, c := range columns {
+		quotedCols[i] = c
+	}
+
+	rowPlaceholders := make([]string, len(batch))
+	allValues := make([]interface{}, 0, len(batch)*len(columns))
+	paramIdx := 1
+
+	for r, row := range batch {
+		colPlaceholders := make([]string, len(columns))
+		for c := range columns {
+			if db.driver == "postgres" {
+				colPlaceholders[c] = fmt.Sprintf("$%d", paramIdx)
+			} else {
+				colPlaceholders[c] = "?"
+			}
+			paramIdx++
+		}
+		rowPlaceholders[r] = "(" + strings.Join(colPlaceholders, ", ") + ")"
+		allValues = append(allValues, row...)
+	}
+
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES %s",
+		tableName,
+		strings.Join(quotedCols, ", "),
+		strings.Join(rowPlaceholders, ", "))
+
+	_, err := tx.Exec(query, allValues...)
 	return err
 }
 

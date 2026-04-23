@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-04-23
+
+### Changed
+- **Performance**: Rewrote data population engine with bulk insert support
+  - Replaced per-row `INSERT` auto-commits with transactional batch inserts (500 rows per transaction)
+  - Multi-row `INSERT INTO t (...) VALUES (...),(...),...` reduces SQL round-trips by ~500x
+  - SQLite-specific pragmas applied on connection: WAL journal mode, `synchronous = NORMAL`, 64 MB page cache, temp store in memory
+  - Expected speedup: 50–100x for SQLite on large datasets
+
 ### Changed
 
 - **Go Module Structure**: Moved Go module files back to `golang/` directory

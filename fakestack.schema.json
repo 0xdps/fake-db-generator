@@ -1,0 +1,554 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/0xdps/fake-stack/fakestack.schema.json",
+  "title": "Fakestack Schema",
+  "description": "Schema definition for generating databases with realistic fake data using Fakestack.",
+  "type": "object",
+  "required": ["database"],
+  "additionalProperties": false,
+  "properties": {
+    "database": {
+      "$ref": "#/definitions/database"
+    },
+    "tables": {
+      "type": "array",
+      "description": "List of database table definitions to create.",
+      "items": {
+        "$ref": "#/definitions/table"
+      }
+    },
+    "populate": {
+      "type": "array",
+      "description": "List of population instructions for filling tables with fake data. Tables must be listed in dependency order (parent before child).",
+      "items": {
+        "$ref": "#/definitions/populate"
+      }
+    }
+  },
+  "definitions": {
+    "database": {
+      "type": "object",
+      "description": "Database connection configuration.",
+      "required": ["dbtype", "drivername", "database"],
+      "additionalProperties": false,
+      "properties": {
+        "dbtype": {
+          "type": "string",
+          "description": "The type of database to connect to.",
+          "enum": ["sqlite", "mysql", "postgresql", "psql", "mariadb", "mssql", "cockroachdb"]
+        },
+        "drivername": {
+          "type": "string",
+          "description": "The driver name used to connect to the database.",
+          "examples": [
+            "sqlite",
+            "mysql+mysqlconnector",
+            "postgresql+psycopg2",
+            "mssql+pyodbc"
+          ]
+        },
+        "database": {
+          "type": "string",
+          "description": "Database name, or path to the SQLite file. Use ':memory:' for an in-memory SQLite database.",
+          "examples": ["myapp.db", ":memory:", "myapp"]
+        },
+        "username": {
+          "type": "string",
+          "description": "Database username. Not required for SQLite."
+        },
+        "password": {
+          "type": "string",
+          "description": "Database password. Not required for SQLite."
+        },
+        "host": {
+          "type": "string",
+          "description": "Database server hostname or IP address.",
+          "default": "localhost",
+          "examples": ["localhost", "127.0.0.1", "db.example.com"]
+        },
+        "port": {
+          "type": "integer",
+          "description": "Database server port.",
+          "examples": [3306, 5432, 1433]
+        },
+        "echo": {
+          "type": "boolean",
+          "description": "If true, echo all SQL statements to stdout for debugging.",
+          "default": false
+        }
+      },
+      "if": {
+        "properties": { "dbtype": { "enum": ["mysql", "mariadb"] } }
+      },
+      "then": {
+        "properties": {
+          "drivername": { "enum": ["mysql+mysqlconnector", "mysql+pymysql"] },
+          "port": { "default": 3306 }
+        }
+      },
+      "else": {
+        "if": {
+          "properties": { "dbtype": { "enum": ["postgresql", "psql"] } }
+        },
+        "then": {
+          "properties": {
+            "drivername": { "enum": ["postgresql+psycopg2", "postgresql+asyncpg"] },
+            "port": { "default": 5432 }
+          }
+        },
+        "else": {
+          "if": {
+            "properties": { "dbtype": { "const": "cockroachdb" } }
+          },
+          "then": {
+            "properties": {
+              "port": { "default": 26257 }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": { "dbtype": { "const": "mssql" } }
+            },
+            "then": {
+              "properties": {
+                "drivername": { "enum": ["mssql+pyodbc"] },
+                "port": { "default": 1433 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "description": "A database table definition.",
+      "required": ["name", "columns"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The table name.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "columns": {
+          "type": "array",
+          "description": "List of columns in the table.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/column"
+          }
+        },
+        "indexes": {
+          "type": "array",
+          "description": "List of indexes to create on the table.",
+          "items": {
+            "$ref": "#/definitions/index"
+          }
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "description": "A column definition within a table.",
+      "required": ["name", "type", "options"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The column name.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "type": {
+          "$ref": "#/definitions/columnType"
+        },
+        "options": {
+          "$ref": "#/definitions/columnOptions"
+        }
+      }
+    },
+    "columnType": {
+      "description": "The data type of the column. Use a string for simple types, or an object for types that require arguments.",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Simple column types that need no arguments.",
+          "enum": ["integer", "text", "boolean", "date", "datetime", "time", "float", "biginteger", "smallinteger", "json", "binary"]
+        },
+        {
+          "type": "object",
+          "description": "Complex column types that require additional arguments.",
+          "required": ["name", "args"],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The type name.",
+              "enum": ["string", "decimal", "numeric", "varchar", "char"]
+            },
+            "args": {
+              "type": "object",
+              "description": "Arguments for the column type.",
+              "additionalProperties": false,
+              "properties": {
+                "length": {
+                  "type": "integer",
+                  "description": "Maximum character length for string/varchar/char columns.",
+                  "minimum": 1,
+                  "maximum": 65535
+                },
+                "precision": {
+                  "type": "integer",
+                  "description": "Total number of significant digits for decimal/numeric columns.",
+                  "minimum": 1,
+                  "maximum": 65
+                },
+                "scale": {
+                  "type": "integer",
+                  "description": "Number of digits after the decimal point for decimal/numeric columns.",
+                  "minimum": 0,
+                  "maximum": 30
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "columnOptions": {
+      "type": "object",
+      "description": "Constraints and properties for a column.",
+      "additionalProperties": false,
+      "properties": {
+        "primary_key": {
+          "type": "boolean",
+          "description": "Mark this column as the primary key.",
+          "default": false
+        },
+        "autoincrement": {
+          "type": "boolean",
+          "description": "Automatically increment this column's value on each insert. Only valid for integer primary keys.",
+          "default": false
+        },
+        "nullable": {
+          "type": "boolean",
+          "description": "Whether this column can contain NULL values.",
+          "default": true
+        },
+        "unique": {
+          "type": "boolean",
+          "description": "Enforce a unique constraint on this column.",
+          "default": false
+        },
+        "default": {
+          "description": "Default value for this column when none is specified.",
+          "type": ["string", "number", "boolean", "null"]
+        },
+        "foreign_key": {
+          "$ref": "#/definitions/foreignKey"
+        }
+      }
+    },
+    "foreignKey": {
+      "type": "object",
+      "description": "A foreign key constraint referencing another table's column.",
+      "required": ["table", "column"],
+      "additionalProperties": false,
+      "properties": {
+        "table": {
+          "type": "string",
+          "description": "The referenced table name.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "column": {
+          "type": "string",
+          "description": "The referenced column name in the parent table.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "ondelete": {
+          "type": "string",
+          "description": "Referential action to take when the referenced row is deleted.",
+          "enum": ["CASCADE", "SET NULL", "RESTRICT", "NO ACTION", "SET DEFAULT"],
+          "default": "RESTRICT"
+        }
+      }
+    },
+    "index": {
+      "type": "object",
+      "description": "A database index definition.",
+      "required": ["name", "columns"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The index name.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "columns": {
+          "type": "array",
+          "description": "List of column names included in the index.",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+          }
+        },
+        "unique": {
+          "type": "boolean",
+          "description": "Whether this is a unique index.",
+          "default": false
+        }
+      }
+    },
+    "populate": {
+      "type": "object",
+      "description": "Population instructions for a single table.",
+      "required": ["name", "count", "fields"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the table to populate.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "count": {
+          "type": "integer",
+          "description": "Number of rows to insert.",
+          "minimum": 1
+        },
+        "fields": {
+          "type": "array",
+          "description": "List of field population instructions.",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/populateField"
+          }
+        }
+      }
+    },
+    "populateField": {
+      "type": "object",
+      "description": "Specifies how to generate data for a single field.",
+      "required": ["name", "generator"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The column name to populate.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "generator": {
+          "type": "string",
+          "description": "The generator to use. Use 'object.property' syntax (e.g. 'person.first_name') to extract a property from a shared generated object.",
+          "anyOf": [
+            {
+              "enum": [
+                "name",
+                "first_name",
+                "last_name",
+                "user_name",
+                "username",
+                "email",
+                "password",
+                "gender",
+                "phone_number",
+                "phone",
+                "ssn",
+                "address",
+                "street_address",
+                "city",
+                "state",
+                "country",
+                "postcode",
+                "zip_code",
+                "latitude",
+                "longitude",
+                "company",
+                "job",
+                "catch_phrase",
+                "url",
+                "domain_name",
+                "ipv4",
+                "ipv6",
+                "mac_address",
+                "user_agent",
+                "chrome_user_agent",
+                "firefox_user_agent",
+                "safari_user_agent",
+                "opera_user_agent",
+                "slug",
+                "date",
+                "date_time",
+                "past_date",
+                "future_date",
+                "time",
+                "timestamp",
+                "unix_time",
+                "year",
+                "month",
+                "month_string",
+                "weekday",
+                "timezone",
+                "text",
+                "sentence",
+                "paragraph",
+                "word",
+                "words",
+                "emoji",
+                "emoji_description",
+                "emoji_category",
+                "quote",
+                "phrase",
+                "question",
+                "integer",
+                "random_int",
+                "float",
+                "decimal",
+                "random_digit",
+                "random_number",
+                "random_float",
+                "credit_card",
+                "credit_card_type",
+                "credit_card_cvv",
+                "credit_card_exp",
+                "currency",
+                "currency_long",
+                "bitcoin_address",
+                "bitcoin_private_key",
+                "iban",
+                "routing_number",
+                "ein",
+                "country_code",
+                "language",
+                "language_abbr",
+                "locale",
+                "color",
+                "hex_color",
+                "safe_color",
+                "product_name",
+                "product_category",
+                "product_description",
+                "product_feature",
+                "price",
+                "filename",
+                "file_extension",
+                "mime_type",
+                "image_url",
+                "book_title",
+                "book_author",
+                "book_genre",
+                "movie_name",
+                "movie_genre",
+                "animal",
+                "animal_type",
+                "pet_name",
+                "cat",
+                "dog",
+                "bird",
+                "farm_animal",
+                "fruit",
+                "vegetable",
+                "breakfast",
+                "lunch",
+                "dinner",
+                "snack",
+                "dessert",
+                "drink",
+                "car_maker",
+                "car_model",
+                "car_type",
+                "car_fuel_type",
+                "car_transmission_type",
+                "app_name",
+                "app_version",
+                "app_author",
+                "boolean",
+                "uuid",
+                "person",
+                "user",
+                "random_from",
+                "unique_item",
+                "db_random_item",
+                "template",
+                "foreign_key",
+                "person.first_name",
+                "person.last_name",
+                "person.email",
+                "person.gender",
+                "person.address",
+                "person.full_name",
+                "user.username",
+                "user.email",
+                "user.password"
+              ]
+            },
+            {
+              "type": "string",
+              "description": "Custom generator string (e.g. object.property patterns)."
+            }
+          ]
+        },
+        "args": {
+          "$ref": "#/definitions/generatorArgs"
+        }
+      }
+    },
+    "generatorArgs": {
+      "description": "Optional arguments to pass to the generator.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "min": {
+          "type": "number",
+          "description": "Minimum value (used with random_int, random_float)."
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum value (used with random_int, random_float)."
+        },
+        "decimals": {
+          "type": "integer",
+          "description": "Number of decimal places (used with random_float).",
+          "minimum": 0
+        },
+        "digits": {
+          "type": "integer",
+          "description": "Number of digits to generate (used with random_number).",
+          "minimum": 1
+        },
+        "count": {
+          "type": "integer",
+          "description": "Number of items to generate (used with words).",
+          "minimum": 1
+        },
+        "max_chars": {
+          "type": "integer",
+          "description": "Maximum character count (used with text).",
+          "minimum": 1
+        },
+        "choices": {
+          "type": "array",
+          "description": "List of values to randomly select from (used with random_from).",
+          "minItems": 1,
+          "items": {
+            "type": ["string", "number", "boolean"]
+          }
+        },
+        "table": {
+          "type": "string",
+          "description": "Name of the referenced table (used with foreign_key and db_random_item).",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "column": {
+          "type": "string",
+          "description": "Column name to select from the referenced table (used with db_random_item).",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "template": {
+          "type": "string",
+          "description": "Template string for custom format generation (used with template generator). Use {word}, {digit}, {letter}, etc. as placeholders.",
+          "examples": ["SKU-{word}-{digit}{digit}{digit}", "ID-{digit}{digit}-{letter}{letter}"]
+        }
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@ import (
 )
 
 // Version is set during build via -ldflags
-var Version = "1.1.0"
+var Version = "1.2.0"
 
 const exampleSchema = `{
   "database": {
@@ -167,6 +167,10 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
+
+	if err := db.applyPragmas(); err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: failed to apply DB pragmas: %v\n", err)
+	}
 
 	// Create tables
 	if create {
