@@ -1,7 +1,7 @@
 {
   "name": "fakestack",
-  "version": "1.2.0",
-  "description": "High-performance database generator - Generate databases from JSON schemas with realistic fake data",
+  "version": "2.0.0",
+  "description": "High-performance database generator - Generate databases from JSON schemas with realistic fake data. Auto-downloads latest binary on first run.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -9,7 +9,6 @@
   },
   "files": [
     "dist",
-    "bin",
     "README.md",
     "LICENSE"
   ],
@@ -30,7 +29,8 @@
     "mysql",
     "postgresql",
     "sqlite",
-    "fakestack"
+    "fakestack",
+    "auto-update"
   ],
   "author": "Devendra Pratap <dps.manit@gmail.com>",
   "license": "MIT",

@@ -17,7 +17,8 @@ High-performance database generator powered by Go. Generate database tables and 
 🎯 **Interactive generator** - Built-in schema generator with 10 pre-built templates  
 🎯 **Simple API** - CLI and programmatic usage  
 🌍 **Cross-platform** - Works on Linux, macOS, and Windows  
-📦 **Zero dependencies** - Includes pre-compiled binaries
+📦 **Tiny package** - <100KB (downloads binary on first run)  
+🔄 **Auto-updates** - Checks for latest version on each run
 
 ## Installation
 
@@ -28,6 +29,8 @@ yarn add fakestack
 # or
 pnpm add fakestack
 ```
+
+> **Note**: The package automatically downloads the appropriate binary for your platform on first run (~10-20MB) and checks for updates on subsequent runs. The binary is cached in `~/.fakestack/bin/`.
 
 ## 🎯 Quick Start
 

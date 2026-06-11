@@ -74,11 +74,8 @@ where = ["."]
 include = ["fakestack*"]
 exclude = ["tests*"]
 
-[tool.setuptools.package-data]
-fakestack = [
-    "bin/*",
-    "bin/fakestack-*"
-]
+# No package data - binaries are downloaded on first run
+# This reduces package size from ~50MB to <100KB
 
 # Code Quality Tools Configuration
 

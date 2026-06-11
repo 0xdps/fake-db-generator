@@ -2,26 +2,29 @@
  * Fakestack - High-Performance Database Generator (TypeScript Wrapper)
  * 
  * This package wraps the Go core binary for blazing-fast database generation.
- * Uses external process execution for simplicity and cross-platform compatibility.
+ * Downloads binary on first run and auto-updates when new versions are available.
  */
 
 import { spawn, SpawnOptions } from 'child_process';
-import { platform, arch } from 'os';
+import { platform, arch, homedir } from 'os';
 import { join } from 'path';
-import { chmodSync, existsSync } from 'fs';
+import { chmodSync, existsSync, mkdirSync, writeFileSync, readFileSync, createWriteStream } from 'fs';
+import { get as httpsGet } from 'https';
+
+const GITHUB_REPO = '0xdps/fake-stack';
+const CACHE_DIR = join(homedir(), '.fakestack', 'bin');
+const VERSION_FILE = join(homedir(), '.fakestack', 'version.txt');
 
 /**
- * Get the path to the platform-specific binary
+ * Get platform-specific binary information
  */
-export function getBinaryPath(): string {
-  // Platform mapping
+function getPlatformInfo(): { os: string; arch: string; binaryName: string } {
   const platformMap: Record<string, string> = {
     'linux': 'linux',
     'darwin': 'darwin',
     'win32': 'windows'
   };
   
-  // Architecture mapping
   const archMap: Record<string, string> = {
     'x64': 'amd64',
     'arm64': 'arm64'
@@ -30,43 +33,145 @@ export function getBinaryPath(): string {
   const osName = platformMap[platform()] || platform();
   const archName = archMap[arch()] || 'amd64';
   
-  // Construct binary name
   let binaryName = `fakestack-${osName}-${archName}`;
   if (osName === 'windows') {
     binaryName += '.exe';
   }
   
-  // Find binary path - CommonJS module
-  const binDir = join(__dirname, '..', 'bin');
-  const binaryPath = join(binDir, binaryName);
+  return { os: osName, arch: archName, binaryName };
+}
+
+/**
+ * Fetch latest version from GitHub releases
+ */
+async function getLatestVersion(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${GITHUB_REPO}/releases/latest`,
+      headers: { 'User-Agent': 'fakestack-npm' }
+    };
+    
+    httpsGet(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          const version = json.tag_name?.replace(/^v/, '') || '1.2.0';
+          resolve(version);
+        } catch (err) {
+          reject(new Error('Failed to parse GitHub API response'));
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+/**
+ * Download binary from GitHub releases
+ */
+async function downloadBinary(version: string, binaryName: string, targetPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    console.log(`📦 Downloading fakestack v${version}...`);
+    
+    const url = `https://github.com/${GITHUB_REPO}/releases/download/v${version}/${binaryName}`;
+    
+    httpsGet(url, (res) => {
+      if (res.statusCode === 302 || res.statusCode === 301) {
+        // Follow redirect
+        httpsGet(res.headers.location!, (redirectRes) => {
+          const file = createWriteStream(targetPath);
+          redirectRes.pipe(file);
+          file.on('finish', () => {
+            file.close();
+            chmodSync(targetPath, 0o755);
+            console.log('✓ Download complete!');
+            resolve();
+          });
+        }).on('error', reject);
+      } else {
+        const file = createWriteStream(targetPath);
+        res.pipe(file);
+        file.on('finish', () => {
+          file.close();
+          chmodSync(targetPath, 0o755);
+          console.log('✓ Download complete!');
+          resolve();
+        });
+      }
+    }).on('error', reject);
+  });
+}
+
+/**
+ * Get or download the binary, checking for updates
+ */
+async function ensureBinary(): Promise<string> {
+  const { binaryName } = getPlatformInfo();
+  const binaryPath = join(CACHE_DIR, binaryName);
   
-  if (!existsSync(binaryPath)) {
-    throw new Error(
-      `Binary not found: ${binaryPath}\n` +
-      `Platform: ${osName}-${archName}\n` +
-      `Please report this issue at: https://github.com/0xdps/fake-stack/issues`
-    );
+  // Create cache directory if it doesn't exist
+  if (!existsSync(CACHE_DIR)) {
+    mkdirSync(CACHE_DIR, { recursive: true });
+  }
+  
+  // Check if binary exists
+  const binaryExists = existsSync(binaryPath);
+  
+  // Get latest version
+  let latestVersion: string;
+  try {
+    latestVersion = await getLatestVersion();
+  } catch (err) {
+    // If we can't check version but binary exists, use it
+    if (binaryExists) {
+      return binaryPath;
+    }
+    throw new Error('Failed to check for latest version and no local binary found');
+  }
+  
+  // Check local version
+  let localVersion = '';
+  if (existsSync(VERSION_FILE)) {
+    try {
+      localVersion = readFileSync(VERSION_FILE, 'utf8').trim();
+    } catch (err) {
+      // Ignore
+    }
+  }
+  
+  // Download if missing or outdated
+  if (!binaryExists || localVersion !== latestVersion) {
+    if (binaryExists && localVersion !== latestVersion) {
+      console.log(`🔄 Updating from v${localVersion} to v${latestVersion}...`);
+    }
+    
+    await downloadBinary(latestVersion, binaryName, binaryPath);
+    
+    // Save version
+    writeFileSync(VERSION_FILE, latestVersion);
   }
   
   return binaryPath;
 }
 
 /**
+ * Get the path to the platform-specific binary (legacy, for compatibility)
+ */
+export function getBinaryPath(): string {
+  const { binaryName } = getPlatformInfo();
+  return join(CACHE_DIR, binaryName);
+}
+
+/**
  * Execute the fakestack Go binary with given arguments
  */
-export function runFakestack(args: string[]): Promise<number> {
-  return new Promise((resolve, reject) => {
+export async function runFakestack(args: string[]): Promise<number> {
+  return new Promise(async (resolve, reject) => {
     try {
-      const binary = getBinaryPath();
-      
-      // Make executable on Unix systems
-      if (platform() !== 'win32') {
-        try {
-          chmodSync(binary, 0o755);
-        } catch (err) {
-          // Already executable or no permission - ignore
-        }
-      }
+      // Ensure binary is downloaded and up-to-date
+      const binary = await ensureBinary();
       
       // Spawn options
       const options: SpawnOptions = {

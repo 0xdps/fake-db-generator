@@ -333,6 +333,8 @@ func (g *Generator) Generate(field PopulateField, commons map[string]interface{}
 		return g.randomFrom(args)
 	case "unique_item":
 		return g.uniqueItem(field.Name, args)
+	case "foreign_key":
+		return g.foreignKey(args)
 	case "db_random_item":
 		return g.dbRandomItem(args)
 	case "template":
@@ -463,9 +465,30 @@ func (g *Generator) dbRandomItem(args interface{}) (interface{}, error) {
 	return nil, fmt.Errorf("db_random_item requires a string argument")
 }
 
+// foreignKey gets a random ID from a foreign table
+func (g *Generator) foreignKey(args any) (any, error) {
+	argsMap, ok := args.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("foreign_key requires args object with 'table' field")
+	}
+
+	tableName, ok := argsMap["table"].(string)
+	if !ok {
+		return nil, fmt.Errorf("foreign_key requires 'table' string in args")
+	}
+
+	// Default to 'id' column
+	columnName := "id"
+	if col, ok := argsMap["column"].(string); ok {
+		columnName = col
+	}
+
+	return g.db.GetRandomValue(tableName, columnName)
+}
+
 // ClearUniques clears the unique value cache
 func (g *Generator) ClearUniques() {
-	g.uniques = make(map[string]map[interface{}]bool)
+	g.uniques = make(map[string]map[any]bool)
 }
 
 // generateFromTemplate generates value from a template pattern

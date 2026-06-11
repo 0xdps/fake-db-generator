@@ -14,9 +14,13 @@ Python wrapper for the high-performance Fakestack database generator.
 pip install fakestack
 ```
 
+> **Note**: The package automatically downloads the appropriate binary for your platform on first run (~10-20MB) and checks for updates on subsequent runs. The binary is cached in `~/.cache/fakestack/bin/` (Linux/macOS) or `%LOCALAPPDATA%\fakestack\bin\` (Windows).
+
 ## Features
 
-- **Zero Dependencies**: No runtime dependencies, all functionality provided by bundled Go binary
+- **Zero Dependencies**: No runtime dependencies, binary downloaded on first run
+- **Tiny Package**: <100KB package size (binary downloaded separately)
+- **Auto-Updates**: Checks for latest version on each run
 - **116+ Fake Data Generators**: Built on gofakeit (financial, localization, products, animals, food, vehicles, books, and more)
 - **Template Generator**: Create custom data patterns (SKUs, IDs, codes) with modifiers
 - **Interactive Schema Generator**: Built-in generator with 10 pre-built templates

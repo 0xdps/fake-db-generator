@@ -39,19 +39,39 @@ Generate databases from JSON schemas with realistic fake data. **10-50x faster**
 
 Choose your preferred package manager:
 
-**Python (pip)** - Requires Python >= 3.8
+**macOS/Linux (Homebrew)** ⭐ Recommended
+```bash
+brew tap 0xdps/fakestack
+brew install fakestack
+```
+
+**Linux (Install Script)** ⭐ Recommended
+```bash
+curl -sSL https://raw.githubusercontent.com/0xdps/fake-stack/trunk/install.sh | bash
+```
+
+**Docker** 🐳
+```bash
+docker pull 0xdps/fakestack
+docker run --rm -v $(pwd):/data 0xdps/fakestack -g .
+```
+
+**Direct Download**
+```bash
+# Download from GitHub Releases
+curl -L https://github.com/0xdps/fake-stack/releases/latest/download/fakestack-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m) -o fakestack
+chmod +x fakestack
+sudo mv fakestack /usr/local/bin/
+```
+
+**Python (pip)** - Wrapper package
 ```bash
 pip install fakestack
 ```
 
-**Node.js (npm)**
+**Node.js (npm)** - Wrapper package
 ```bash
 npm install fakestack
-```
-
-**Homebrew (macOS/Linux)**
-```bash
-brew install 0xdps/fakestack
 ```
 
 **Go (from source)**
@@ -59,8 +79,7 @@ brew install 0xdps/fakestack
 cd golang && go build
 ```
 
-**Direct Download**  
-Pre-built binaries available on [GitHub Releases](https://github.com/0xdps/fake-stack/releases)
+See [docs/distribution.md](docs/distribution.md) for all installation options and platform-specific guides.
 
 ## 🚀 Quick Start
 

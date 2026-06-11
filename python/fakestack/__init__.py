@@ -2,9 +2,11 @@
 
 Generate databases from JSON schemas with realistic fake data.
 Powered by a Go core for blazing-fast performance!
+
+Auto-downloads latest binary on first run - no bundled binaries means tiny package size.
 """
 
-__version__ = "1.2.0"
+__version__ = "2.0.0"
 __author__ = "Devendra Pratap"
 __email__ = "dps.manit@gmail.com"
 __license__ = "MIT"
