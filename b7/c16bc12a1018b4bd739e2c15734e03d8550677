@@ -1,0 +1,53 @@
+python/fakestack/runner.py
+  s_befae1e252c192::t_d6240906d7b837 196-197
+python/fakestack/__init__.py
+  h_7a2f4c8f0473b8 9
+  s_befae1e252c192::t_f66da2a483c23d 5-6
+install.sh
+  s_befae1e252c192::t_8293be77379b38 1-64
+node/src/index.ts
+  s_befae1e252c192::t_9a593a653e9162 170-171,173-174
+  s_befae1e252c192::t_7d28e9d136033b 5,9,11-16,19,21,41-142,144-153,159-164
+node/README.md
+  s_befae1e252c192::t_8bb51528a8c535 20-21,33
+install-local.sh
+  s_befae1e252c192::t_fc39c40766e8d3 1-19
+node/package.json
+  h_7a2f4c8f0473b8 3
+  s_befae1e252c192::t_693c673e1fd1a9 4,32-33
+scripts/build-deb.sh
+  s_befae1e252c192::t_9975fe5e6f73bc 1-38
+python/pyproject.toml
+  s_befae1e252c192::t_f0cd7c26676cb5 77-78
+python/README.md
+  s_befae1e252c192::t_8bb51528a8c535 17-18,21-23
+Dockerfile
+  s_befae1e252c192::t_5d9ea9d274b0d9 1-28
+golang/generator.go
+  s_befae1e252c192::t_72a6975c2bc77d 336-337
+  s_befae1e252c192::t_435d095f9dcbe4 468,471-488
+  h_7a2f4c8f0473b8 469-470,491
+README.md
+  s_befae1e252c192::t_2a9e801530de2b 42,44-45,48,50,53,55-74,82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b7c16bc12a1018b4bd739e2c15734e03d8550677",
+  "prompts": {},
+  "humans": {
+    "h_7a2f4c8f0473b8": {
+      "author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_befae1e252c192": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "46ff92cb-daf9-4324-b412-9da4427d1ceb",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  }
+}
