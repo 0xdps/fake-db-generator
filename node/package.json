@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "fakestack": "./dist/cli.js"
+    "fakestack": "dist/cli.js"
   },
   "files": [
     "dist",
@@ -36,7 +36,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/0xdps/fake-stack.git",
+    "url": "git+https://github.com/0xdps/fake-stack.git",
     "directory": "node"
   },
   "bugs": {
