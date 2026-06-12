@@ -1,0 +1,21 @@
+golang/Formula/fakestack.rb
+  s_befae1e252c192::t_1b4c4551e692c1 4,10,13,20,23
+golang/homebrew/fakestack.rb
+  s_befae1e252c192::t_b123412b3094bf 4,10,13,20,23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fa52784762b86b98614800770a0af0f2301375fd",
+  "prompts": {},
+  "sessions": {
+    "s_befae1e252c192": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "46ff92cb-daf9-4324-b412-9da4427d1ceb",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  }
+}
